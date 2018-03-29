@@ -2,6 +2,7 @@ package com.story.sonder;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -23,11 +24,16 @@ public class MainActivity extends Activity {
             "Hills", "Meme", "Work", "Meee", "None"};
     private int selectedFilter = 0;
     private int selectedTag = 0;
+    private int screen_width, screen_height;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        DisplayMetrics metrics = getResources().getDisplayMetrics();
+        screen_width = metrics.widthPixels;
+        screen_height = metrics.heightPixels;
     }
 
     @Override
@@ -58,7 +64,8 @@ public class MainActivity extends Activity {
         final Dialog dialog = new Dialog(this);
         dialog.setCanceledOnTouchOutside(true);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.rgb(30, 30, 30)));
+        Objects.requireNonNull(dialog.getWindow())
+                .setBackgroundDrawable(new ColorDrawable(Color.rgb(30, 30, 30)));
         dialog.setContentView(R.layout.filter_popup);
         GridView gridView = dialog.findViewById(R.id.filters);
         gridView.setAdapter(new FilterAdapter(getApplicationContext(), filters));
@@ -71,18 +78,16 @@ public class MainActivity extends Activity {
             }
         });
         dialog.show();
-        DisplayMetrics metrics = getResources().getDisplayMetrics();
-        int width = metrics.widthPixels;
-        int height = metrics.heightPixels;
         Objects.requireNonNull(dialog.getWindow())
-                .setLayout((6 * width) / 7, (3 * height) / 5);
+                .setLayout((6 * screen_width) / 7, (3 * screen_height) / 5);
     }
 
     private void showTagSelectionDialog() {
         final Dialog dialog = new Dialog(this);
         dialog.setCanceledOnTouchOutside(true);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.rgb(30, 30, 30)));
+        Objects.requireNonNull(dialog.getWindow())
+                .setBackgroundDrawable(new ColorDrawable(Color.rgb(30, 30, 30)));
         dialog.setContentView(R.layout.tag_popup);
         GridView gridView = dialog.findViewById(R.id.tags_grid);
         gridView.setAdapter(new FilterAdapter(getApplicationContext(), tags));
@@ -94,10 +99,11 @@ public class MainActivity extends Activity {
             }
         });
         dialog.show();
-        DisplayMetrics metrics = getResources().getDisplayMetrics();
-        int width = metrics.widthPixels;
-        int height = metrics.heightPixels;
         Objects.requireNonNull(dialog.getWindow())
-                .setLayout((6 * width) / 7, (4 * height) / 5);
+                .setLayout((6 * screen_width) / 7, (4 * screen_height) / 5);
+    }
+
+    public void openImage(View view) {
+        startActivity(new Intent(this, ImageViewActivity.class));
     }
 }
