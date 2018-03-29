@@ -5,17 +5,27 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <GridView
-        android:id="@+id/filters"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_margin="16dp"
-        android:horizontalSpacing="@dimen/labels_horizontal_spacing"
-        android:numColumns="3"
-        android:verticalSpacing="@dimen/labels_vertical_spacing"
-        app:layout_constraintBottom_toBottomOf="parent"
+    <TextView
+        android:id="@+id/filter_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/popup_margin"
+        android:text="@string/filter_text"
+        android:textSize="@dimen/popup_text_size"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <GridView
+        android:id="@+id/filters"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/popup_margin"
+        android:horizontalSpacing="@dimen/labels_horizontal_spacing"
+        android:numColumns="3"
+        android:verticalSpacing="@dimen/labels_vertical_spacing"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/filter_text" />
 
 </android.support.constraint.ConstraintLayout>

@@ -2,6 +2,8 @@ package com.story.sonder;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.Menu;
@@ -55,8 +57,9 @@ public class MainActivity extends Activity {
     private void showFilterSelectionDialog() {
         final Dialog dialog = new Dialog(this);
         dialog.setCanceledOnTouchOutside(true);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.rgb(30, 30, 30)));
         dialog.setContentView(R.layout.filter_popup);
-        dialog.setTitle(R.string.filter_select);
         GridView gridView = dialog.findViewById(R.id.filters);
         gridView.setAdapter(new FilterAdapter(getApplicationContext(), filters));
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -79,6 +82,7 @@ public class MainActivity extends Activity {
         final Dialog dialog = new Dialog(this);
         dialog.setCanceledOnTouchOutside(true);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.rgb(30, 30, 30)));
         dialog.setContentView(R.layout.tag_popup);
         GridView gridView = dialog.findViewById(R.id.tags_grid);
         gridView.setAdapter(new FilterAdapter(getApplicationContext(), tags));
