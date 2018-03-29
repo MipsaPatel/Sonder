@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/tag"
+        android:title="@string/options_tag" />
+
+    <item
+        android:id="@+id/filter"
+        android:title="@string/options_filter" />
+
+    <item
+        android:id="@+id/about_us"
+        android:title="@string/options_about_us" />
+
+</menu>
