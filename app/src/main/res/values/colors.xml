@@ -3,4 +3,5 @@
     <color name="colorPrimary">#7C0022</color>
     <color name="colorPrimaryDark">#58000B</color>
     <color name="colorAccent">#C1415B</color>
+    <color name="gridItemTextColor">#FFFFFF</color>
 </resources>

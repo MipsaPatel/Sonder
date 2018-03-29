@@ -4,4 +4,5 @@
     <string name="options_filter">Filter</string>
     <string name="options_about_us">About Us</string>
     <string name="filter_select">Select a filter</string>
+    <string name="popup_text">Select Tag For Photo</string>
 </resources>
