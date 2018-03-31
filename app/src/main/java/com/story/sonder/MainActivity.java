@@ -2,8 +2,6 @@ package com.story.sonder;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -12,15 +10,12 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.GridView;
 
 import java.util.Objects;
 
 public class MainActivity extends Activity {
-    private String[] filters = Constants.categories; // TODO: use it directly
-    private String[] tags = filters;
     private int[] images = {R.drawable.sunset_portrait, R.drawable.sunset, R.drawable.sunset, R.drawable.sunset, R.drawable.sunset};
     private int selectedFilter = 0;
     private int selectedTag = 0;
@@ -67,14 +62,9 @@ public class MainActivity extends Activity {
     }
 
     private void showFilterSelectionDialog() {
-        final Dialog dialog = new Dialog(this);
-        dialog.setCanceledOnTouchOutside(true);
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        Objects.requireNonNull(dialog.getWindow())
-                .setBackgroundDrawable(new ColorDrawable(Color.rgb(30, 30, 30)));
-        dialog.setContentView(R.layout.filter_popup);
+        final Dialog dialog = Util.createDialog(this, R.layout.filter_popup);
         GridView gridView = dialog.findViewById(R.id.filters);
-        gridView.setAdapter(new FilterAdapter(getApplicationContext(), filters));
+        gridView.setAdapter(new FilterAdapter(getApplicationContext(), Constants.categories));
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int pos, long id) {
@@ -89,14 +79,9 @@ public class MainActivity extends Activity {
     }
 
     private void showTagSelectionDialog() {
-        final Dialog dialog = new Dialog(this);
-        dialog.setCanceledOnTouchOutside(true);
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        Objects.requireNonNull(dialog.getWindow())
-                .setBackgroundDrawable(new ColorDrawable(Color.rgb(30, 30, 30)));
-        dialog.setContentView(R.layout.tag_popup);
+        final Dialog dialog = Util.createDialog(this, R.layout.tag_popup);
         GridView gridView = dialog.findViewById(R.id.tags_grid);
-        gridView.setAdapter(new FilterAdapter(getApplicationContext(), tags));
+        gridView.setAdapter(new FilterAdapter(getApplicationContext(), Constants.categories));
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int pos, long id) {
