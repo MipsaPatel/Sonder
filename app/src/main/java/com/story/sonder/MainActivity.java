@@ -2,7 +2,6 @@ package com.story.sonder;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -20,14 +19,11 @@ import android.widget.GridView;
 import java.util.Objects;
 
 public class MainActivity extends Activity {
-    private String[] filters = {"Sunset", "Beach", "Selfie", "Portrait", "Scenery", "Friends",
-            "Hills", "Meme", "Work", "Meee", "None"};
-    private String[] tags = {"Sunset", "Beach", "Selfie", "Portrait", "Scenery", "Friends",
-            "Hills", "Meme", "Work", "Meee", "None"};
+    private String[] filters = Constants.categories; // TODO: use it directly
+    private String[] tags = filters;
     private int[] images = {R.drawable.sunset_portrait, R.drawable.sunset, R.drawable.sunset, R.drawable.sunset, R.drawable.sunset};
     private int selectedFilter = 0;
     private int selectedTag = 0;
-    private int screen_width, screen_height;
     private int galleryColumns = 3;
 
     @Override
@@ -36,8 +32,8 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
 
         DisplayMetrics metrics = getResources().getDisplayMetrics();
-        screen_width = metrics.widthPixels;
-        screen_height = metrics.heightPixels;
+        Constants.height = metrics.heightPixels;
+        Constants.width = metrics.widthPixels;
 
         RecyclerView galleryView = findViewById(R.id.gallery_view);
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this, galleryColumns);
@@ -89,7 +85,7 @@ public class MainActivity extends Activity {
         });
         dialog.show();
         Objects.requireNonNull(dialog.getWindow())
-                .setLayout((6 * screen_width) / 7, (3 * screen_height) / 5);
+                .setLayout((6 * Constants.width) / 7, (3 * Constants.height) / 5);
     }
 
     private void showTagSelectionDialog() {
@@ -104,12 +100,12 @@ public class MainActivity extends Activity {
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int pos, long id) {
-                // TODO: Display the next image with tags
+                // TODO: Display the next image with categories
                 selectedTag = pos;
             }
         });
         dialog.show();
         Objects.requireNonNull(dialog.getWindow())
-                .setLayout((6 * screen_width) / 7, (4 * screen_height) / 5);
+                .setLayout((6 * Constants.width) / 7, (4 * Constants.height) / 5);
     }
 }
