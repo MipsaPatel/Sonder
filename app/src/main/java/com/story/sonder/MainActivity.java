@@ -2,6 +2,7 @@ package com.story.sonder;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -56,6 +57,8 @@ public class MainActivity extends Activity {
                 break;
 
             case R.id.about_us:
+                Intent about_us = new Intent(this, AboutUsActivity.class);
+                startActivity(about_us);
                 break;
         }
         return super.onOptionsItemSelected(item);

@@ -24,6 +24,7 @@
         android:elevation="1dp"
         android:padding="8dp"
         android:src="@drawable/ic_share_image"
+        android:onClick="openShareView"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/tag_image"
         app:layout_constraintStart_toStartOf="parent" />
