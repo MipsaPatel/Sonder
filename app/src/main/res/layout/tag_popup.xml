@@ -10,6 +10,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_margin="@dimen/popup_margin"
+        android:contentDescription="@string/tag_image_description"
         android:src="@drawable/sunset"
         android:adjustViewBounds="true"
         app:layout_constraintEnd_toEndOf="parent"

@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -22,9 +24,11 @@ public class MainActivity extends Activity {
             "Hills", "Meme", "Work", "Meee", "None"};
     private String[] tags = {"Sunset", "Beach", "Selfie", "Portrait", "Scenery", "Friends",
             "Hills", "Meme", "Work", "Meee", "None"};
+    private int[] images = {R.drawable.sunset_portrait, R.drawable.sunset, R.drawable.sunset, R.drawable.sunset, R.drawable.sunset};
     private int selectedFilter = 0;
     private int selectedTag = 0;
     private int screen_width, screen_height;
+    private int galleryColumns = 3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +38,12 @@ public class MainActivity extends Activity {
         DisplayMetrics metrics = getResources().getDisplayMetrics();
         screen_width = metrics.widthPixels;
         screen_height = metrics.heightPixels;
+
+        RecyclerView galleryView = findViewById(R.id.gallery_view);
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, galleryColumns);
+        galleryView.setLayoutManager(gridLayoutManager);
+        GalleryAdapter galleryAdapter = new GalleryAdapter(this, images);
+        galleryView.setAdapter(galleryAdapter);
     }
 
     @Override
@@ -101,9 +111,5 @@ public class MainActivity extends Activity {
         dialog.show();
         Objects.requireNonNull(dialog.getWindow())
                 .setLayout((6 * screen_width) / 7, (4 * screen_height) / 5);
-    }
-
-    public void openImage(View view) {
-        startActivity(new Intent(this, ImageViewActivity.class));
     }
 }
