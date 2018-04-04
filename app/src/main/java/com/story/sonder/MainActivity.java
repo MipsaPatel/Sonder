@@ -13,6 +13,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.ImageButton;
+import android.widget.TextView;
 
 import java.util.Objects;
 
@@ -36,6 +38,17 @@ public class MainActivity extends Activity {
         galleryView.setLayoutManager(gridLayoutManager);
         GalleryAdapter galleryAdapter = new GalleryAdapter(this, images);
         galleryView.setAdapter(galleryAdapter);
+
+        final ImageButton closeButton = findViewById(R.id.close_filter_button);
+        final TextView filterView = findViewById(R.id.filterView);
+        closeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // TODO: Display all images in RecyclerView
+                filterView.setVisibility(View.GONE);
+                closeButton.setVisibility(View.GONE);
+            }
+        });
     }
 
     @Override
@@ -66,13 +79,18 @@ public class MainActivity extends Activity {
 
     private void showFilterSelectionDialog() {
         final Dialog dialog = Util.createDialog(this, R.layout.filter_popup);
-        GridView gridView = dialog.findViewById(R.id.filters);
+        final TextView filterView = findViewById(R.id.filterView);
+        final ImageButton closeButton = findViewById(R.id.close_filter_button);
+        final GridView gridView = dialog.findViewById(R.id.filters);
         gridView.setAdapter(new FilterAdapter(getApplicationContext(), Constants.categories));
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int pos, long id) {
-                // TODO: Set the option in MainActivity
+                // TODO: Display only filtered images in RecyclerView.
                 selectedFilter = pos;
+                filterView.setVisibility(View.VISIBLE);
+                closeButton.setVisibility(View.VISIBLE);
+                filterView.setText(gridView.getItemAtPosition(pos).toString());
                 dialog.dismiss();
             }
         });
@@ -88,7 +106,7 @@ public class MainActivity extends Activity {
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int pos, long id) {
-                // TODO: Display the next image with categories
+                // TODO: Write tag to database, display the next image with categories
                 selectedTag = pos;
             }
         });
