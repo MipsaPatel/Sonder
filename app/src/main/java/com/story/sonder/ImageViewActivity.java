@@ -7,8 +7,10 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.Nullable;
+import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewParent;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ImageView;
@@ -19,7 +21,8 @@ import java.util.Objects;
 
 public class ImageViewActivity extends Activity {
 
-    private int image;
+    private int imagePosition;
+    private int[] images = {R.drawable.sunset_portrait, R.drawable.sunset, R.drawable.sunset, R.drawable.sunset, R.drawable.sunset};
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -27,9 +30,12 @@ public class ImageViewActivity extends Activity {
         setContentView(R.layout.image_view);
 
         Intent intent = getIntent();
-        image = intent.getExtras().getInt("image");
-        ImageView item = findViewById(R.id.image);
-        item.setImageResource(image);
+        imagePosition = intent.getExtras().getInt("image_position");
+
+        ViewPager imagePager = findViewById(R.id.image_pager);
+        ImagePagerAdapter imagePagerAdapter = new ImagePagerAdapter(images, this);
+        imagePager.setAdapter(imagePagerAdapter);
+        imagePager.setCurrentItem(imagePosition);
     }
 
     public void openTagView(View view) {
@@ -41,7 +47,7 @@ public class ImageViewActivity extends Activity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int pos, long id) {
                 // TODO: Set the tag for the image in database
-                tagView.setText(gridView.getItemAtPosition(pos).toString());
+                // tagView.setText(gridView.getItemAtPosition(pos).toString());
                 dialog.dismiss();
             }
         });

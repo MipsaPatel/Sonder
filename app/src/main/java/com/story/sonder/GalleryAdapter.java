@@ -45,7 +45,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.MyViewHo
         @Override
         public void onClick(View view) {
             Intent intent = new Intent(context, ImageViewActivity.class);
-            intent.putExtra("image", images[getLayoutPosition()]);
+            intent.putExtra("image_position", getLayoutPosition());
             context.startActivity(intent );
         }
     }
