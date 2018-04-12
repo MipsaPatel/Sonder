@@ -1,8 +1,16 @@
 package com.story.sonder;
 
-public class Constants {
-    public static final String[] categories = {"Sunset", "Beach", "Selfie", "Portrait", "Scenery", "Friends",
+import android.database.Cursor;
+import android.provider.MediaStore;
+
+class Constants {
+    static final String[] categories = {"Sunset", "Beach", "Selfie", "Portrait", "Scenery", "Friends",
             "Hills", "Meme", "Work", "Meee", "None"};
-    public static int height;
-    public static int width;
+    static int height;
+    static int width;
+    static ImageDatabase imageDatabase;
+    static int galleryColumns = 3;
+    static String[] thumbnailsProjection = {MediaStore.Images.Thumbnails.IMAGE_ID, MediaStore.Images.Thumbnails.DATA};
+    static String[] imagesProjection = {MediaStore.Images.Media._ID, MediaStore.Images.Media.DATA};
+    static String[] imagesFolder = {"%Dataset%"};
 }

@@ -43,13 +43,10 @@ public class ImageViewActivity extends Activity {
         final TextView tagView = findViewById(R.id.image_tag_text);
         final GridView gridView = dialog.findViewById(R.id.filters);
         gridView.setAdapter(new FilterAdapter(getApplicationContext(), Constants.categories));
-        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int pos, long id) {
-                // TODO: Set the tag for the image in database
-                // tagView.setText(gridView.getItemAtPosition(pos).toString());
-                dialog.dismiss();
-            }
+        gridView.setOnItemClickListener((adapterView, v, pos, id) -> {
+            // TODO: Set the tag for the image in database
+            // tagView.setText(gridView.getItemAtPosition(pos).toString());
+            dialog.dismiss();
         });
         dialog.show();
         Objects.requireNonNull(dialog.getWindow())
