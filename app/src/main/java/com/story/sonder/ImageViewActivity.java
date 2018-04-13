@@ -4,25 +4,25 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.View;
-import android.view.ViewParent;
-import android.widget.AdapterView;
 import android.widget.GridView;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class ImageViewActivity extends Activity {
 
-    private int imagePosition;
-    private int[] images = {R.drawable.sunset_portrait, R.drawable.sunset, R.drawable.sunset, R.drawable.sunset, R.drawable.sunset};
+    List<ImageDetails> images = new ArrayList<>();
+    ViewPager imagePager;
+    TextView tagView;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -30,12 +30,38 @@ public class ImageViewActivity extends Activity {
         setContentView(R.layout.image_view);
 
         Intent intent = getIntent();
-        imagePosition = intent.getExtras().getInt("image_position");
+        int imagePosition = intent.getExtras().getInt("image_position");
 
-        ViewPager imagePager = findViewById(R.id.image_pager);
-        ImagePagerAdapter imagePagerAdapter = new ImagePagerAdapter(images, this);
-        imagePager.setAdapter(imagePagerAdapter);
-        imagePager.setCurrentItem(imagePosition);
+        imagePager = findViewById(R.id.image_pager);
+        tagView = findViewById(R.id.image_tag_text);
+
+        AsyncTask.execute(() -> {
+            images.addAll(Constants.imageDatabase.imageDao().getAll());
+
+            runOnUiThread(() -> {
+                ImagePagerAdapter imagePagerAdapter = new ImagePagerAdapter(images, this);
+                imagePager.setAdapter(imagePagerAdapter);
+                imagePager.setCurrentItem(imagePosition);
+            });
+        });
+
+        imagePager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                AsyncTask.execute(() -> {
+                    String tag = Constants.imageDatabase.imageDao().getRecordFromImagePath(images.get(position).getImagePath()).getImageTag();
+                    runOnUiThread(() -> tagView.setText(tag));
+                });
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+            }
+        });
     }
 
     public void openTagView(View view) {
@@ -45,7 +71,6 @@ public class ImageViewActivity extends Activity {
         gridView.setAdapter(new FilterAdapter(getApplicationContext(), Constants.categories));
         gridView.setOnItemClickListener((adapterView, v, pos, id) -> {
             // TODO: Set the tag for the image in database
-            // tagView.setText(gridView.getItemAtPosition(pos).toString());
             dialog.dismiss();
         });
         dialog.show();
