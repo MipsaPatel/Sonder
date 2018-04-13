@@ -10,11 +10,22 @@ public class ImageDetails {
     @NonNull
     private String imagePath;
 
+    private long imageId;
+
     private String imageTag;
 
-    ImageDetails(@NonNull String imagePath, String imageTag) {
+    ImageDetails(@NonNull String imagePath, long imageId, String imageTag) {
         this.imagePath = imagePath;
         this.imageTag = imageTag;
+        this.imageId = imageId;
+    }
+
+    long getImageId() {
+        return imageId;
+    }
+
+    public void setImageId(long imageId) {
+        this.imageId = imageId;
     }
 
     @NonNull String getImagePath() {

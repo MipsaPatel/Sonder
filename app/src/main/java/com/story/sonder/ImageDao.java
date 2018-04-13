@@ -13,8 +13,14 @@ public interface ImageDao {
     @Query("SELECT * FROM ImageDetails")
     List<ImageDetails> getAll();
 
+    @Query("SELECT * FROM ImageDetails WHERE imagePath LIKE :image_path")
+    ImageDetails getRecordFromImagePath(String image_path);
+
+    @Query("SELECT * FROM ImageDetails WHERE imageTag LIKE :image_tag")
+    List<ImageDetails> filterImages(String image_tag);
+
     @Insert
-    void insertAll(ImageDetails... imageDetails);
+    void insertOneRecord(ImageDetails imageDetails);
 
     @Delete
     void delete(ImageDetails imageDetails);
