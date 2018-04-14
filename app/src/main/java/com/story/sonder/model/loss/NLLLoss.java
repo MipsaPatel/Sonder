@@ -7,14 +7,17 @@ import com.story.sonder.model.Tensor;
 public class NLLLoss implements ILoss<Integer> {
     @Override
     public Pair<Double, Object> forward(Tensor input, Integer target) {
-        // TODO: Compute the loss and return with input to back-prop
-        return null;
+        return Pair.create(-input.getValueAt(target), Pair.create(input.getShape(), target));
     }
 
     @Override
     public Tensor backward(double gradInput, Object backInput) {
-        // TODO: Pass the gradient backwards
-        return null;
+        Pair input = (Pair) backInput;
+        int[] inShape = (int[]) input.first;
+        int target = (int) input.second;
+        Tensor output = new Tensor(inShape);
+        output.setValueAt(target, -gradInput);
+        return output;
     }
 
     @Override
