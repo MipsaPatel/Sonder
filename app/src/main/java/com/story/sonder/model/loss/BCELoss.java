@@ -1,6 +1,6 @@
 package com.story.sonder.model.loss;
 
-import android.util.Pair;
+import android.support.v4.util.Pair;
 
 import com.story.sonder.model.Tensor;
 
