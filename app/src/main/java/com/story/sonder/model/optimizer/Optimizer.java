@@ -15,7 +15,7 @@ abstract class Optimizer implements IOptimizer {
     @Override
     public void reset_gradients() {
         for (List<Tensor> parameter : parameters)
-            parameter.get(1).fill(0);
+            parameter.get(1).updateEach((i, v) -> 0);
     }
 
     @Override
