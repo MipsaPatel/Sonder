@@ -7,14 +7,18 @@ import com.story.sonder.model.Tensor;
 public class LogSoftMax extends Layer implements ILayer {
     @Override
     public Pair<Tensor, Object> forward(Tensor input) {
-        // TODO: Forward pass. Return the output and input to back-prop
-        return null;
+        Tensor output = input.copy();
+        final double max = output.reduce(Math::max, null);
+        output.updateEach((i, v) -> v - max);
+        final double sum = Math.log(output.reduce((x, y) -> x + Math.exp(y), 0.));
+        output.updateEach((i, v) -> v - sum);
+        return Pair.create(output, output);
     }
 
     @Override
     public Tensor backward(Tensor gradInput, Object backInput) {
-        // TODO: Backward pass. Compute gradients for local parameters. Return the gradient for back-prop
-        return null;
+        Tensor output = (Tensor) backInput;
+        return output.copy().updateEach((i, v) -> gradInput.getValueAt(i) * (1 - Math.exp(v)));
     }
 
     @Override
