@@ -46,6 +46,7 @@ public class ImageViewActivity extends Activity {
         });
 
         imagePager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
             }
@@ -70,7 +71,12 @@ public class ImageViewActivity extends Activity {
         final GridView gridView = dialog.findViewById(R.id.filters);
         gridView.setAdapter(new FilterAdapter(getApplicationContext(), Constants.categories));
         gridView.setOnItemClickListener((adapterView, v, pos, id) -> {
-            // TODO: Set the tag for the image in database
+            int currentPage = imagePager.getCurrentItem();
+            images.get(currentPage).setImageTag(Constants.categories[pos]);
+            tagView.setText(Constants.categories[pos]);
+            AsyncTask.execute(() -> {
+                Constants.imageDatabase.imageDao().update(images.get(currentPage));
+            });
             dialog.dismiss();
         });
         dialog.show();
