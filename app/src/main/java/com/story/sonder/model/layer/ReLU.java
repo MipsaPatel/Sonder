@@ -7,14 +7,14 @@ import com.story.sonder.model.Tensor;
 public class ReLU extends Layer implements ILayer {
     @Override
     public Pair<Tensor, Object> forward(Tensor input) {
-        // TODO: Forward pass. Return the output and input to back-prop
-        return null;
+        Tensor output = input.copy().updateEach((i, v) -> Math.max(0, v));
+        return Pair.create(output, input);
     }
 
     @Override
     public Tensor backward(Tensor gradInput, Object backInput) {
-        // TODO: Backward pass. Compute gradients for local parameters. Return the gradient for back-prop
-        return null;
+        Tensor input = (Tensor) backInput;
+        return gradInput.copy().updateEach((i, v) -> input.getValueAt(i) < 0 ? 0 : v);
     }
 
     @Override
