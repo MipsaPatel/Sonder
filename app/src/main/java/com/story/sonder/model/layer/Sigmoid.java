@@ -7,14 +7,14 @@ import com.story.sonder.model.Tensor;
 public class Sigmoid extends Layer implements ILayer {
     @Override
     public Pair<Tensor, Object> forward(Tensor input) {
-        // TODO: Forward pass. Return the output and input to back-prop
-        return null;
+        Tensor output = input.copy().updateEach((i, v) -> 1 / (1 + Math.exp(-v)));
+        return Pair.create(output, output);
     }
 
     @Override
     public Tensor backward(Tensor gradInput, Object backInput) {
-        // TODO: Backward pass. Compute gradients for local parameters. Return the gradient for back-prop
-        return null;
+        Tensor output = (Tensor) backInput;
+        return output.updateEach((i, v) -> v * (1 - v) * gradInput.getValueAt(i));
     }
 
     @Override
