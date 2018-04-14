@@ -4,9 +4,9 @@ import android.support.v4.util.Pair;
 
 import com.story.sonder.model.Tensor;
 
-public class BCELoss implements ILoss {
+public class BCELoss implements ILoss<Integer> {
     @Override
-    public Pair<Double, Object> forward(Tensor input, Tensor target) {
+    public Pair<Double, Object> forward(Tensor input, Integer target) {
         // TODO: Compute the loss and return with input to back-prop
         return null;
     }
