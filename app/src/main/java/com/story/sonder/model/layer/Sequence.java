@@ -4,34 +4,58 @@ import android.support.v4.util.Pair;
 
 import com.story.sonder.model.Tensor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Sequence extends Layer implements ILayer {
-    public Sequence() {
-        // TODO: get all layers
+    private final ILayer[] layers;
+    private String string;
+
+    public Sequence(ILayer... layers) {
+        this.layers = layers;
     }
 
     @Override
     public Pair<Tensor, Object> forward(Tensor input) {
-        // TODO: Forward pass. Return the output and input to back-prop
-        return null;
+        List<Object> backInputs = new ArrayList<>();
+        for (ILayer layer : layers) {
+            Pair<Tensor, Object> out = layer.forward(input);
+            input = out.first;
+            backInputs.add(out.second);
+        }
+        return Pair.create(input, backInputs);
     }
 
     @Override
     public Tensor backward(Tensor gradInput, Object backInput) {
-        // TODO: Backward pass. Compute gradients for local parameters. Return the gradient for back-prop
-        return null;
+        List backInputs = (List) backInput;
+        for (int i = layers.length; i-- > 0; )
+            gradInput = layers[i].backward(gradInput, backInputs.get(i));
+        return gradInput;
     }
 
     @Override
     public List<List<Tensor>> getParameters() {
-        // TODO: return list of parameters from all layers
-        return super.getParameters();
+        List<List<Tensor>> parameters = new ArrayList<>();
+        for (ILayer layer : layers)
+            parameters.addAll(layer.getParameters());
+        return parameters;
     }
 
     @Override
     public String toString() {
-        // TODO: fill in the parameters
-        return "Sequence(layers...)";
+        if (string == null) {
+            if (layers == null || layers.length == 0)
+                return "Sequence()";
+            StringBuilder str = new StringBuilder("Sequence(");
+            boolean first = true;
+            for (ILayer layer : layers) {
+                str.append(first ? "\n\t" : ",\n\t").append(layer.toString());
+                first = false;
+            }
+            str.append("\n)");
+            string = str.toString();
+        }
+        return string;
     }
 }
