@@ -9,12 +9,12 @@ import java.util.Arrays;
 public class MaxPool2d extends Layer implements ILayer {
     private final int[] kernel;
 
-    public MaxPool2d(int... kernelSize) {
-        if (kernelSize.length > 2)
-            throw new IllegalArgumentException("kernel cannot have more than 2 dimensions");
-        kernel = Arrays.copyOf(kernelSize, 2);
-        if (kernelSize.length == 1)
-            kernel[1] = kernel[0];
+    public MaxPool2d(int kernelWidth, int kernelHeight) {
+        kernel = new int[]{kernelWidth, kernelHeight};
+    }
+
+    public MaxPool2d(int kernelSize) {
+        this(kernelSize, kernelSize);
     }
 
     @Override

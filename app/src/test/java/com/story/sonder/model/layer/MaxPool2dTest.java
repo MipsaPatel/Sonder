@@ -18,11 +18,6 @@ public class MaxPool2dTest {
         maxPool2d = new MaxPool2d(3);
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void initialize() {
-        new MaxPool2d(2, 1, 4);
-    }
-
     @Test
     public void forward() {
         Tensor input = new Tensor(2, 7, 5).updateEach((i, v) -> i);
