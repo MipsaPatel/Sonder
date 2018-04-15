@@ -2,12 +2,14 @@ package com.story.sonder;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.support.v4.util.Pair;
 import android.view.Window;
 
 import com.story.sonder.model.ModelUtils;
+import com.story.sonder.model.Tensor;
 import com.story.sonder.model.layer.ILayer;
 import com.story.sonder.model.layer.Reshape;
 import com.story.sonder.model.layer.Sequence;
@@ -49,5 +51,35 @@ class Util {
 
     static Pair<ILayer, Pair<ILoss, IOptimizer>> createModelFromJSONString(String json) throws JSONException {
         return createModelFromJSON(new JSONObject(json));
+    }
+
+    static Tensor bitmapToTensor(Bitmap bitmap, int width, int height) {
+        int w = bitmap.getWidth();
+        int h = bitmap.getHeight();
+        if (w * (long) height > width * (long) h) {
+            w = w * height / h;
+            h = height;
+        } else {
+            h = h * width / w;
+            w = width;
+        }
+        bitmap = Bitmap.createScaledBitmap(bitmap, w, h, true);
+        int x = w - width >> 1;
+        int y = h - height >> 1;
+        int[] pixels = new int[width * height];
+        bitmap.getPixels(pixels, 0, width, x, y, width, height);
+        double[] image = new double[pixels.length * 3];
+        int greenShift = pixels.length;
+        int blueShift = 2 * greenShift;
+        for (int i = -1; ++i < pixels.length; ) {
+            image[i] = Color.red(pixels[i]) / 255.;
+            image[i + greenShift] = Color.green(pixels[i]) / 255.;
+            image[i + blueShift] = Color.blue(pixels[i]) / 255.;
+        }
+        return new Tensor(image, 3, width, height);
+    }
+
+    static Tensor bitmapToTensor(Bitmap bitmap) {
+        return bitmapToTensor(bitmap, Constants.inputWidth, Constants.inputHeight);
     }
 }

@@ -11,4 +11,6 @@ class Constants {
     static int galleryColumns = 3;
     static String[] imagesProjection = {MediaStore.Images.Media._ID, MediaStore.Images.Media.DATA};
     static String[] imagesFolder = {"%Dataset%"};
+    static int inputWidth = 32;
+    static int inputHeight = 32;
 }
