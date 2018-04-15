@@ -64,6 +64,10 @@ public class  MainActivity extends Activity {
                 showFilterSelectionDialog();
                 break;
 
+            case R.id.sync:
+                syncModelWithServer();
+                break;
+
             case R.id.about_us:
                 Intent about_us = new Intent(this, AboutUsActivity.class);
                 startActivity(about_us);
@@ -160,6 +164,10 @@ public class  MainActivity extends Activity {
         dialog.show();
         Objects.requireNonNull(dialog.getWindow())
                 .setLayout((6 * Constants.width) / 7, (4 * Constants.height) / 5);
+    }
+
+    private void syncModelWithServer() {
+        // TODO: if last sync was before 5 minutes, sync
     }
 
     private class LoadImagesFromDB extends AsyncTask<Void, Void, List<ImageDetails>> {

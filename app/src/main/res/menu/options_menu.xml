@@ -10,6 +10,10 @@
         android:title="@string/options_filter" />
 
     <item
+        android:id="@+id/sync"
+        android:title="@string/options_sync" />
+
+    <item
         android:id="@+id/about_us"
         android:title="@string/options_about_us" />
 

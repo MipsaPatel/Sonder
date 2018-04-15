@@ -13,4 +13,5 @@
     <string name="close_filter">Close filter</string>
     <string name="title_activity_about_us">AboutUsActivity</string>
     <string name="about_us_description">This is an app to tag photos in your gallery.</string>
+    <string name="options_sync">Sync model</string>
 </resources>
