@@ -37,7 +37,7 @@ public class Tensor {
         return count;
     }
 
-    double[] getArray() {
+    public double[] getArray() {
         return array;
     }
 
