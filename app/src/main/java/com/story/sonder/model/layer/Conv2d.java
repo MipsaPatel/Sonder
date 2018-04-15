@@ -4,7 +4,7 @@ import android.support.v4.util.Pair;
 
 import com.story.sonder.model.Tensor;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -38,10 +38,19 @@ public class Conv2d extends Layer implements ILayer {
 
     @Override
     public List<List<Tensor>> getParameters() {
-        return Arrays.asList(
-                Arrays.asList(weights, gWeights),
-                Arrays.asList(bias, gBias)
-        );
+        List<List<Tensor>> parameters = new ArrayList<>();
+        List<Tensor> weightList = new ArrayList<>();
+        List<Tensor> biasList = new ArrayList<>();
+
+        weightList.add(weights);
+        weightList.add(gWeights);
+        parameters.add(weightList);
+
+        biasList.add(bias);
+        biasList.add(gBias);
+        parameters.add(biasList);
+
+        return parameters;
     }
 
     @Override
