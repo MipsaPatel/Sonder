@@ -1,18 +1,22 @@
 package com.story.sonder;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.Dialog;
 import android.arch.persistence.room.Room;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -20,6 +24,7 @@ import android.view.View;
 import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,36 +32,18 @@ import java.util.Objects;
 
 public class  MainActivity extends Activity {
     private int selectedTag = 0;
+    final private int REQUEST_STORAGE_PERMISSION = 1;
 
-    List<ImageDetails> recyclerViewImages = new ArrayList<>();
-    GalleryAdapter galleryAdapter;
-    RecyclerView galleryView;
+    private List<ImageDetails> recyclerViewImages = new ArrayList<>();
+    private GalleryAdapter galleryAdapter;
+    private RecyclerView galleryView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        DisplayMetrics metrics = getResources().getDisplayMetrics();
-        Constants.height = metrics.heightPixels;
-        Constants.width = metrics.widthPixels;
-
-        galleryView = findViewById(R.id.gallery_view);
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(getApplicationContext(), Constants.galleryColumns);
-        galleryView.setLayoutManager(gridLayoutManager);
-        galleryAdapter = new GalleryAdapter(this, recyclerViewImages, getContentResolver());
-        galleryView.setAdapter(galleryAdapter);
-
-        Constants.imageDatabase = Room.databaseBuilder(getApplicationContext(), ImageDatabase.class, "image-database").build();
-
-        ConstraintLayout filterLayout = findViewById(R.id.constraintLayout);
-        final ImageButton closeButton = findViewById(R.id.close_filter_button);
-        closeButton.setOnClickListener(view -> {
-            filterLayout.setVisibility(View.GONE);
-            galleryView.setAdapter(galleryAdapter);
-        });
-
-        new LoadImagesFromDB().execute();
+        checkStoragePermission();
     }
 
     @Override
@@ -85,6 +72,58 @@ public class  MainActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
+    private void checkStoragePermission() {
+        if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(MainActivity.this, new String[] {Manifest.permission.READ_EXTERNAL_STORAGE},
+                    REQUEST_STORAGE_PERMISSION);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_STORAGE_PERMISSION:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    initializeConstants();
+                    displayMainScreen();
+                } else {
+                    Toast.makeText(this, "STORAGE PERMISSION DENIED. App will not function.", Toast.LENGTH_SHORT).show();
+                }
+                break;
+
+            default:
+                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+    }
+
+    private void initializeConstants() {
+        DisplayMetrics metrics = getResources().getDisplayMetrics();
+        Constants.height = metrics.heightPixels;
+        Constants.width = metrics.widthPixels;
+
+        if (Constants.imageDatabase == null) {
+            Constants.imageDatabase = Room.databaseBuilder(getApplicationContext(), ImageDatabase.class, "image-database").build();
+        }
+    }
+
+    private void displayMainScreen() {
+        galleryView = findViewById(R.id.gallery_view);
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(getApplicationContext(), Constants.galleryColumns);
+        galleryView.setLayoutManager(gridLayoutManager);
+        galleryAdapter = new GalleryAdapter(this, recyclerViewImages, null, getContentResolver());
+        galleryView.setAdapter(galleryAdapter);
+
+        ConstraintLayout filterLayout = findViewById(R.id.constraintLayout);
+        final ImageButton closeButton = findViewById(R.id.close_filter_button);
+        closeButton.setOnClickListener(view -> {
+            filterLayout.setVisibility(View.GONE);
+            galleryView.setAdapter(galleryAdapter);
+        });
+
+        new LoadImagesFromDB().execute();
+    }
+
     private void showFilterSelectionDialog() {
         final Dialog dialog = Util.createDialog(this, R.layout.filter_popup);
         ConstraintLayout filterLayout = findViewById(R.id.constraintLayout);
@@ -96,11 +135,12 @@ public class  MainActivity extends Activity {
             filterView.setText(gridView.getItemAtPosition(pos).toString());
 
             AsyncTask.execute(() -> {
-                    List<ImageDetails> filteredImages = Constants.imageDatabase.imageDao().filterImages(Constants.categories[pos]);
-                    runOnUiThread(() -> {
-                            GalleryAdapter filteredAdapter = new GalleryAdapter(getApplicationContext(), filteredImages, getContentResolver());
-                            galleryView.setAdapter(filteredAdapter);
-                    });
+                List<ImageDetails> filteredImages = Constants.imageDatabase.imageDao().filterImages(Constants.categories[pos]);
+                runOnUiThread(() -> {
+                    GalleryAdapter filteredAdapter = new GalleryAdapter(getApplicationContext(), filteredImages,
+                            Constants.categories[pos], getContentResolver());
+                    galleryView.setAdapter(filteredAdapter);
+                });
             });
             dialog.dismiss();
         });
