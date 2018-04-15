@@ -50,7 +50,7 @@ public class Sequence extends Layer implements ILayer {
             StringBuilder str = new StringBuilder("Sequence(");
             boolean first = true;
             for (ILayer layer : layers) {
-                str.append(first ? "\n\t" : ",\n\t").append(layer.toString());
+                str.append(first ? "\n\t" : ",\n\t").append(layer.toString().replaceAll("\n", "\n\t"));
                 first = false;
             }
             str.append("\n)");
