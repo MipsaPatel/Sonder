@@ -30,9 +30,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class  MainActivity extends Activity {
-    private int selectedTag = 0;
+public class MainActivity extends Activity {
     final private int REQUEST_STORAGE_PERMISSION = 1;
+    private int selectedTag = 0;
 
     private List<ImageDetails> recyclerViewImages = new ArrayList<>();
     private GalleryAdapter galleryAdapter;
@@ -79,7 +79,7 @@ public class  MainActivity extends Activity {
     private void checkStoragePermission() {
         if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(MainActivity.this, new String[] {Manifest.permission.READ_EXTERNAL_STORAGE},
+            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
                     REQUEST_STORAGE_PERMISSION);
         }
     }
@@ -171,7 +171,6 @@ public class  MainActivity extends Activity {
     }
 
     private class LoadImagesFromDB extends AsyncTask<Void, Void, List<ImageDetails>> {
-
         @Override
         protected List<ImageDetails> doInBackground(Void... voids) {
             return Constants.imageDatabase.imageDao().getAll();

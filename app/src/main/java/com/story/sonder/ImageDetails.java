@@ -28,7 +28,8 @@ public class ImageDetails {
         this.imageId = imageId;
     }
 
-    @NonNull String getImagePath() {
+    @NonNull
+    String getImagePath() {
         return imagePath;
     }
 

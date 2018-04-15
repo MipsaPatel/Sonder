@@ -31,7 +31,7 @@ public class ImageViewActivity extends Activity {
         setContentView(R.layout.image_view);
 
         Intent intent = getIntent();
-        int imagePosition = intent.getExtras().getInt("image_position");
+        int imagePosition = Objects.requireNonNull(intent.getExtras()).getInt("image_position");
         filter = intent.getExtras().getString("set_filter");
 
         imagePager = findViewById(R.id.image_pager);
@@ -79,7 +79,7 @@ public class ImageViewActivity extends Activity {
             int currentPage = imagePager.getCurrentItem();
             images.get(currentPage).setImageTag(Constants.categories[pos]);
             tagView.setText(Constants.categories[pos]);
-            AsyncTask.execute(() -> 
+            AsyncTask.execute(() ->
                     Constants.imageDatabase.imageDao().update(images.get(currentPage))
             );
             dialog.dismiss();
@@ -89,12 +89,12 @@ public class ImageViewActivity extends Activity {
                 .setLayout((6 * Constants.width) / 7, (3 * Constants.height) / 5);
     }
 
-    public void openShareView(View view){
-        //TODO: Error on Android N and above- file:// URIs not allowed, fix it.
+    public void openShareView(View view) {
+        // TODO: Error on Android N and above- file:// URIs not allowed, fix it.
         Intent share = new Intent(Intent.ACTION_SEND);
         share.setType("image/*");
         String imagePath = Environment.getExternalStorageDirectory()
-                + "@drawable/sunset.jpg"; //TODO: use image field
+                + "@drawable/sunset.jpg"; // TODO: use image field
 
         File imageFileToShare = new File(imagePath);
         Uri uri = Uri.fromFile(imageFileToShare);

@@ -42,9 +42,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.MyViewHo
 
         if (thumbnail != null) {
             holder.image.setImageBitmap(thumbnail);
-        }
-
-        else {
+        } else {
             String imagePath = images.get(position).getImagePath();
             Bitmap thumbnailBitmap = ThumbnailUtils.extractThumbnail(BitmapFactory.decodeFile(imagePath), 96, 96);
             holder.image.setImageBitmap(thumbnailBitmap);
@@ -58,6 +56,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.MyViewHo
 
     public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         ImageView image;
+
         MyViewHolder(View item) {
             super(item);
             image = item.findViewById(R.id.galleryItem);
@@ -69,7 +68,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.MyViewHo
             Intent intent = new Intent(context, ImageViewActivity.class);
             intent.putExtra("image_position", getLayoutPosition());
             intent.putExtra("set_filter", filter);
-            context.startActivity(intent );
+            context.startActivity(intent);
         }
     }
 }
