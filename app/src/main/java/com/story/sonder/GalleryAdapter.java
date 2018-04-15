@@ -20,11 +20,13 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.MyViewHo
     private List<ImageDetails> images;
     private Context context;
     private ContentResolver contentResolver;
+    private String filter;
 
-    GalleryAdapter(Context context, List<ImageDetails> images, ContentResolver contentResolver) {
+    GalleryAdapter(Context context, List<ImageDetails> images, String filter, ContentResolver contentResolver) {
         this.context = context;
         this.images = images;
         this.contentResolver = contentResolver;
+        this.filter = filter;
     }
 
     @Override
@@ -56,7 +58,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.MyViewHo
 
     public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         ImageView image;
-         MyViewHolder(View item) {
+        MyViewHolder(View item) {
             super(item);
             image = item.findViewById(R.id.galleryItem);
             item.setOnClickListener(this);
@@ -66,6 +68,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.MyViewHo
         public void onClick(View view) {
             Intent intent = new Intent(context, ImageViewActivity.class);
             intent.putExtra("image_position", getLayoutPosition());
+            intent.putExtra("set_filter", filter);
             context.startActivity(intent );
         }
     }

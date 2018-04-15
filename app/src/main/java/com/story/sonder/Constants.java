@@ -7,7 +7,7 @@ class Constants {
             "Hills", "Meme", "Work", "Meee", "None"};
     static int height;
     static int width;
-    static ImageDatabase imageDatabase;
+    static ImageDatabase imageDatabase = null;
     static int galleryColumns = 3;
     static String[] imagesProjection = {MediaStore.Images.Media._ID, MediaStore.Images.Media.DATA};
     static String[] imagesFolder = {"%Dataset%"};

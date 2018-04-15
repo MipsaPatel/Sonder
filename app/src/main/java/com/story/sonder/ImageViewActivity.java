@@ -20,9 +20,10 @@ import java.util.Objects;
 
 public class ImageViewActivity extends Activity {
 
-    List<ImageDetails> images = new ArrayList<>();
-    ViewPager imagePager;
-    TextView tagView;
+    private List<ImageDetails> images = new ArrayList<>();
+    private ViewPager imagePager;
+    private TextView tagView;
+    private String filter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -31,13 +32,17 @@ public class ImageViewActivity extends Activity {
 
         Intent intent = getIntent();
         int imagePosition = intent.getExtras().getInt("image_position");
+        filter = intent.getExtras().getString("set_filter");
 
         imagePager = findViewById(R.id.image_pager);
         tagView = findViewById(R.id.image_tag_text);
 
         AsyncTask.execute(() -> {
-            images.addAll(Constants.imageDatabase.imageDao().getAll());
-
+            if (filter != null) {
+                images.addAll(Constants.imageDatabase.imageDao().filterImages(filter));
+            } else {
+                images.addAll(Constants.imageDatabase.imageDao().getAll());
+            }
             runOnUiThread(() -> {
                 ImagePagerAdapter imagePagerAdapter = new ImagePagerAdapter(images, this);
                 imagePager.setAdapter(imagePagerAdapter);
@@ -74,9 +79,9 @@ public class ImageViewActivity extends Activity {
             int currentPage = imagePager.getCurrentItem();
             images.get(currentPage).setImageTag(Constants.categories[pos]);
             tagView.setText(Constants.categories[pos]);
-            AsyncTask.execute(() -> {
-                Constants.imageDatabase.imageDao().update(images.get(currentPage));
-            });
+            AsyncTask.execute(() -> 
+                    Constants.imageDatabase.imageDao().update(images.get(currentPage))
+            );
             dialog.dismiss();
         });
         dialog.show();
