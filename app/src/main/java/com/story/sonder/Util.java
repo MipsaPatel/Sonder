@@ -19,6 +19,9 @@ import com.story.sonder.model.optimizer.IOptimizer;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
 class Util {
@@ -81,5 +84,23 @@ class Util {
 
     static Tensor bitmapToTensor(Bitmap bitmap) {
         return bitmapToTensor(bitmap, Constants.inputWidth, Constants.inputHeight);
+    }
+
+    static int[] topKIndices(Tensor probabilities, int k) {
+        List<Pair<Double, Integer>> list = new ArrayList<>();
+        probabilities.forEach((i, v) -> {
+                    list.add(Pair.create(v, i));
+                    return 0;
+                }
+        );
+        Collections.sort(list, (o1, o2) -> o2.first.compareTo(o1.first));
+        int[] index = new int[k];
+        for (int i = -1; ++i < k; )
+            index[i] = list.get(i).second;
+        return index;
+    }
+
+    static int[] topKIndices(Tensor probabilities) {
+        return topKIndices(probabilities, Constants.topK);
     }
 }

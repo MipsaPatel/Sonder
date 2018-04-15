@@ -13,4 +13,5 @@ class Constants {
     static String[] imagesFolder = {"%Dataset%"};
     static int inputWidth = 32;
     static int inputHeight = 32;
+    static int topK = 5;
 }
