@@ -48,6 +48,9 @@ public class ImageViewActivity extends Activity {
             });
         });
 
+        if (imagePosition == 0)
+            setTag(0);
+
         imagePager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
 
             @Override
@@ -56,12 +59,7 @@ public class ImageViewActivity extends Activity {
 
             @Override
             public void onPageSelected(int position) {
-                AsyncTask.execute(() -> {
-                    String tag = Constants.imageDatabase.imageDao()
-                            .getRecordFromImagePath(images.get(position).getImagePath())
-                            .getImageTag();
-                    runOnUiThread(() -> tagView.setText(tag));
-                });
+                setTag(position);
             }
 
             @Override
@@ -99,5 +97,14 @@ public class ImageViewActivity extends Activity {
 
         share.putExtra(Intent.EXTRA_STREAM, uri);
         startActivity(Intent.createChooser(share, "Share Image!"));
+    }
+
+    void setTag(int position) {
+        AsyncTask.execute(() -> {
+            String tag = Constants.imageDatabase.imageDao()
+                    .getRecordFromImagePath(images.get(position).getImagePath())
+                    .getImageTag();
+            runOnUiThread(() -> tagView.setText(tag));
+        });
     }
 }
