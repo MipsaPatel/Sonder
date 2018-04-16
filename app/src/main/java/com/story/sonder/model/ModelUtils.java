@@ -1,5 +1,7 @@
 package com.story.sonder.model;
 
+import android.support.v4.util.Pair;
+
 import com.story.sonder.model.layer.Conv2d;
 import com.story.sonder.model.layer.ILayer;
 import com.story.sonder.model.layer.Linear;
@@ -19,6 +21,9 @@ import com.story.sonder.model.optimizer.SGD;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public final class ModelUtils {
     private static Conv2d convolution(JSONObject parameters) throws JSONException {
@@ -149,5 +154,22 @@ public final class ModelUtils {
 
     public static <T> Tensor throughLoss(ILoss<T> loss, Tensor input, T target) {
         return loss.backward(1, loss.forward(input, target).second);
+    }
+
+    public static Pair<JSONObject, List<double[]>> parseModel(JSONObject jsonModel) throws
+            JSONException {
+        JSONObject jsonObject = jsonModel.getJSONObject("optimizer").getJSONObject("parameters");
+        JSONArray parameters = jsonObject.getJSONArray("params");
+        jsonObject.remove("params");
+        List<double[]> parameterList = new ArrayList<>();
+        for (int i = -1; ++i < parameters.length(); ) {
+            JSONArray jsonArray = parameters.getJSONArray(i);
+            double[] array = new double[jsonArray.length()];
+            for (int j = -1; ++j < array.length; ) {
+                array[j] = jsonArray.getDouble(j);
+            }
+            parameterList.add(array);
+        }
+        return Pair.create(jsonModel, parameterList);
     }
 }
