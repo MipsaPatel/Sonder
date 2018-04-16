@@ -30,8 +30,11 @@ abstract class Optimizer implements IOptimizer {
     @Override
     public void setParameters(List<double[]> parameters) {
         for (int p = -1; ++p < parameters.size(); ) {
-            double[] parameter = parameters.get(p);
-            this.parameters.get(p).get(0).updateEach((i, v) -> parameter[i]);
+            System.arraycopy(
+                    parameters.get(p), 0,
+                    this.parameters.get(p).get(0).getArray(), 0,
+                    parameters.get(p).length
+            );
         }
     }
 
