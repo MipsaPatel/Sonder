@@ -7,7 +7,6 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.support.v4.util.Pair;
 import android.view.Window;
-
 import com.story.sonder.model.ModelUtils;
 import com.story.sonder.model.Tensor;
 import com.story.sonder.model.layer.ILayer;
@@ -15,7 +14,6 @@ import com.story.sonder.model.layer.Reshape;
 import com.story.sonder.model.layer.Sequence;
 import com.story.sonder.model.loss.ILoss;
 import com.story.sonder.model.optimizer.IOptimizer;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -62,7 +60,8 @@ class Util {
         if (w * (long) height > width * (long) h) {
             w = w * height / h;
             h = height;
-        } else {
+        }
+        else {
             h = h * width / w;
             w = width;
         }
@@ -89,10 +88,9 @@ class Util {
     static int[] topKIndices(Tensor probabilities, int k) {
         List<Pair<Double, Integer>> list = new ArrayList<>();
         probabilities.forEach((i, v) -> {
-                    list.add(Pair.create(v, i));
-                    return 0;
-                }
-        );
+            list.add(Pair.create(v, i));
+            return 0;
+        });
         Collections.sort(list, (o1, o2) -> o2.first.compareTo(o1.first));
         int[] index = new int[k];
         for (int i = -1; ++i < k; )

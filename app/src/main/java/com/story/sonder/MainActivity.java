@@ -70,8 +70,7 @@ public class MainActivity extends Activity {
                 break;
 
             case R.id.about_us:
-                Intent about_us = new Intent(this, AboutUsActivity.class);
-                startActivity(about_us);
+                startActivity(new Intent(this, AboutUsActivity.class));
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -79,23 +78,22 @@ public class MainActivity extends Activity {
 
     private void checkStoragePermission() {
         if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.READ_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                    REQUEST_STORAGE_PERMISSION);
-            return;
-        }
-        displayMainScreen();
+                != PackageManager.PERMISSION_GRANTED)
+            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission
+                    .READ_EXTERNAL_STORAGE}, REQUEST_STORAGE_PERMISSION);
+        else
+            displayMainScreen();
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode) {
             case REQUEST_STORAGE_PERMISSION:
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
                     displayMainScreen();
-                } else {
-                    Toast.makeText(this, "STORAGE PERMISSION DENIED. App will not function.", Toast.LENGTH_SHORT).show();
-                }
+                else
+                    Toast.makeText(this, "STORAGE PERMISSION DENIED. App will" + " not function.", Toast
+                            .LENGTH_SHORT).show();
                 break;
 
             default:
@@ -108,9 +106,8 @@ public class MainActivity extends Activity {
         Constants.height = metrics.heightPixels;
         Constants.width = metrics.widthPixels;
 
-        if (Constants.imageDatabase == null) {
+        if (Constants.imageDatabase == null)
             Constants.imageDatabase = Room.databaseBuilder(getApplicationContext(), ImageDatabase.class, "image-database").build();
-        }
     }
 
     private void displayMainScreen() {
@@ -141,12 +138,12 @@ public class MainActivity extends Activity {
             filterView.setText(gridView.getItemAtPosition(pos).toString());
 
             AsyncTask.execute(() -> {
-                List<ImageDetails> filteredImages = Constants.imageDatabase.imageDao().filterImages(Constants.categories[pos]);
-                runOnUiThread(() -> {
-                    GalleryAdapter filteredAdapter = new GalleryAdapter(getApplicationContext(), filteredImages,
-                            Constants.categories[pos], getContentResolver());
-                    galleryView.setAdapter(filteredAdapter);
-                });
+                List<ImageDetails> filteredImages = Constants.imageDatabase.imageDao().filterImages(Constants
+                        .categories[pos]);
+                runOnUiThread(() -> galleryView.setAdapter(
+                        new GalleryAdapter(getApplicationContext(), filteredImages,
+                                Constants.categories[pos], getContentResolver())
+                ));
             });
             dialog.dismiss();
         });
@@ -191,8 +188,11 @@ public class MainActivity extends Activity {
     private class ReadImagesFromMediaStore extends AsyncTask<Void, Void, Void> {
         @Override
         protected Void doInBackground(Void... voids) {
-            Cursor images = getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, Constants.imagesProjection,
-                    MediaStore.Images.Media.DATA + " like ? ", Constants.imagesFolder, null);
+            Cursor images = getContentResolver().query(
+                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                    Constants.imagesProjection,
+                    MediaStore.Images.Media.DATA + " like ? ", Constants.imagesFolder,
+                    null);
 
             if (images != null) {
                 while (images.moveToNext()) {
@@ -206,13 +206,11 @@ public class MainActivity extends Activity {
                         ImageDetails imageDetails = new ImageDetails(image_path, image_id, tag);
                         Constants.imageDatabase.imageDao().insertOneRecord(imageDetails);
                         recyclerViewImages.add(imageDetails);
-                        runOnUiThread(() ->
-                                galleryAdapter.notifyItemInserted(recyclerViewImages.size() - 1)
-                        );
-                    } else {
-                        ImageDetails imageDetails = new ImageDetails(image_path, image_id, databaseResult.getImageTag());
-                        Constants.imageDatabase.imageDao().update(imageDetails);
+                        runOnUiThread(() -> galleryAdapter.notifyItemInserted(recyclerViewImages.size() - 1));
                     }
+                    else
+                        Constants.imageDatabase.imageDao()
+                                .update(new ImageDetails(image_path, image_id, databaseResult.getImageTag()));
                 }
                 images.close();
             }

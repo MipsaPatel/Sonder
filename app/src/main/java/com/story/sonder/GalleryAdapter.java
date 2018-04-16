@@ -38,11 +38,12 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.MyViewHo
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
         long imageId = images.get(position).getImageId();
-        Bitmap thumbnail = MediaStore.Images.Thumbnails.getThumbnail(contentResolver, imageId, MediaStore.Images.Thumbnails.MICRO_KIND, null);
+        Bitmap thumbnail = MediaStore.Images.Thumbnails
+                .getThumbnail(contentResolver, imageId, MediaStore.Images.Thumbnails.MICRO_KIND, null);
 
-        if (thumbnail != null) {
+        if (thumbnail != null)
             holder.image.setImageBitmap(thumbnail);
-        } else {
+        else {
             String imagePath = images.get(position).getImagePath();
             Bitmap thumbnailBitmap = ThumbnailUtils.extractThumbnail(BitmapFactory.decodeFile(imagePath), 96, 96);
             holder.image.setImageBitmap(thumbnailBitmap);

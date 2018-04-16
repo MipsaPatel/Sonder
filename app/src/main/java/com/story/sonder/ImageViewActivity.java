@@ -38,14 +38,12 @@ public class ImageViewActivity extends Activity {
         tagView = findViewById(R.id.image_tag_text);
 
         AsyncTask.execute(() -> {
-            if (filter != null) {
+            if (filter != null)
                 images.addAll(Constants.imageDatabase.imageDao().filterImages(filter));
-            } else {
+            else
                 images.addAll(Constants.imageDatabase.imageDao().getAll());
-            }
             runOnUiThread(() -> {
-                ImagePagerAdapter imagePagerAdapter = new ImagePagerAdapter(images, this);
-                imagePager.setAdapter(imagePagerAdapter);
+                imagePager.setAdapter(new ImagePagerAdapter(images, this));
                 imagePager.setCurrentItem(imagePosition);
             });
         });
@@ -59,7 +57,9 @@ public class ImageViewActivity extends Activity {
             @Override
             public void onPageSelected(int position) {
                 AsyncTask.execute(() -> {
-                    String tag = Constants.imageDatabase.imageDao().getRecordFromImagePath(images.get(position).getImagePath()).getImageTag();
+                    String tag = Constants.imageDatabase.imageDao()
+                            .getRecordFromImagePath(images.get(position).getImagePath())
+                            .getImageTag();
                     runOnUiThread(() -> tagView.setText(tag));
                 });
             }
@@ -79,9 +79,7 @@ public class ImageViewActivity extends Activity {
             int currentPage = imagePager.getCurrentItem();
             images.get(currentPage).setImageTag(Constants.categories[pos]);
             tagView.setText(Constants.categories[pos]);
-            AsyncTask.execute(() ->
-                    Constants.imageDatabase.imageDao().update(images.get(currentPage))
-            );
+            AsyncTask.execute(() -> Constants.imageDatabase.imageDao().update(images.get(currentPage)));
             dialog.dismiss();
         });
         dialog.show();
@@ -93,8 +91,8 @@ public class ImageViewActivity extends Activity {
         // TODO: Error on Android N and above- file:// URIs not allowed, fix it.
         Intent share = new Intent(Intent.ACTION_SEND);
         share.setType("image/*");
-        String imagePath = Environment.getExternalStorageDirectory()
-                + "@drawable/sunset.jpg"; // TODO: use image field
+        String imagePath = Environment.getExternalStorageDirectory() + "@drawable/sunset.jpg";
+        // TODO: use image field
 
         File imageFileToShare = new File(imagePath);
         Uri uri = Uri.fromFile(imageFileToShare);
