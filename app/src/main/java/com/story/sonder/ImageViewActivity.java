@@ -6,14 +6,12 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.widget.GridView;
 import android.widget.TextView;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -89,14 +87,10 @@ public class ImageViewActivity extends Activity {
         // TODO: Error on Android N and above- file:// URIs not allowed, fix it.
         Intent share = new Intent(Intent.ACTION_SEND);
         share.setType("image/*");
-        String imagePath = Environment.getExternalStorageDirectory() + "@drawable/sunset.jpg";
-        // TODO: use image field
-
-        File imageFileToShare = new File(imagePath);
-        Uri uri = Uri.fromFile(imageFileToShare);
-
-        share.putExtra(Intent.EXTRA_STREAM, uri);
-        startActivity(Intent.createChooser(share, "Share Image!"));
+        ImageDetails imageDetails = images.get(imagePager.getCurrentItem());
+        share.putExtra(Intent.EXTRA_STREAM, Uri.parse(imageDetails.getImagePath()));
+        share.putExtra(Intent.EXTRA_TEXT, imageDetails.getImageTag());
+        startActivity(Intent.createChooser(share, "Share with"));
     }
 
     void setTag(int position) {
