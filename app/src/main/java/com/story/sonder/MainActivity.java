@@ -43,6 +43,7 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        initializeConstants();
         checkStoragePermission();
     }
 
@@ -81,7 +82,9 @@ public class MainActivity extends Activity {
                 != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
                     REQUEST_STORAGE_PERMISSION);
+            return;
         }
+        displayMainScreen();
     }
 
     @Override
@@ -89,7 +92,6 @@ public class MainActivity extends Activity {
         switch (requestCode) {
             case REQUEST_STORAGE_PERMISSION:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    initializeConstants();
                     displayMainScreen();
                 } else {
                     Toast.makeText(this, "STORAGE PERMISSION DENIED. App will not function.", Toast.LENGTH_SHORT).show();
