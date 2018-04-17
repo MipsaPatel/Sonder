@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.util.Pair;
 import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.widget.GridView;
@@ -70,17 +71,22 @@ public class ImageViewActivity extends Activity {
         final Dialog dialog = Util.createDialog(this, R.layout.filter_popup);
         final TextView tagView = findViewById(R.id.image_tag_text);
         final GridView gridView = dialog.findViewById(R.id.filters);
-        gridView.setAdapter(new FilterAdapter(getApplicationContext(), Constants.categories));
+        int currentPage = imagePager.getCurrentItem();
+        Pair<String[], Object> forwardPhaseOutput = Util.getTagCategories(images.get(currentPage).getImagePath());
+
+        gridView.setAdapter(new FilterAdapter(getApplicationContext(), forwardPhaseOutput.first));
+
         gridView.setOnItemClickListener((adapterView, v, pos, id) -> {
-            int currentPage = imagePager.getCurrentItem();
-            images.get(currentPage).setImageTag(Constants.categories[pos]);
-            tagView.setText(Constants.categories[pos]);
+            String tag = forwardPhaseOutput.first[pos];
+            images.get(currentPage).setImageTag(tag);
+            tagView.setText(tag);
             AsyncTask.execute(() -> Constants.imageDatabase.imageDao().update(images.get(currentPage)));
             dialog.dismiss();
         });
+
         dialog.show();
         Objects.requireNonNull(dialog.getWindow())
-                .setLayout((6 * Constants.width) / 7, (3 * Constants.height) / 5);
+                .setLayout((6 * Constants.width) / 7, (Constants.height) / 3);
     }
 
     public void openShareView(View view) {

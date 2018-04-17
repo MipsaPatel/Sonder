@@ -128,4 +128,17 @@ class Util {
     static int[] topKIndices(Tensor probabilities) {
         return topKIndices(probabilities, Constants.topK);
     }
+
+    static Pair<String[], Object> getTagCategories(String imagePath) {
+        Bitmap bitmap = BitmapFactory.decodeFile(imagePath);
+        Pair<Tensor, Object> modelForward = Constants.model.first.forward(Util.bitmapToTensor(bitmap));
+        int[] indices = Util.topKIndices(modelForward.first);
+
+        String[] tags = new String[indices.length + 1];
+        for (int i = -1; ++i < indices.length; ) {
+            tags[i] = Constants.categories[indices[i]];
+        }
+        tags[indices.length] = "None";
+        return Pair.create(tags, modelForward.second);
+    }
 }
