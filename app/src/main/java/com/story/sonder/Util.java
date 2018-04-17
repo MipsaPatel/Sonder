@@ -32,6 +32,9 @@ import java.util.List;
 import java.util.Objects;
 
 class Util {
+    private static final double[] mean = new double[]{0.498420, 0.458495, 0.397866};
+    private static final double[] std = new double[]{0.313047, 0.269076, 0.231632};
+
     static Dialog createDialog(Context context, int layoutId) {
         final Dialog dialog = new Dialog(context);
         dialog.setCanceledOnTouchOutside(true);
@@ -42,7 +45,7 @@ class Util {
         return dialog;
     }
 
-    static String readFromFile(Context context, String file) throws IOException, JSONException {
+    static String readFromFile(Context context, String file) throws IOException {
         FileInputStream input = context.openFileInput(file);
         BufferedReader reader = new BufferedReader(new InputStreamReader(input));
 
@@ -101,9 +104,9 @@ class Util {
         int greenShift = pixels.length;
         int blueShift = 2 * greenShift;
         for (int i = -1; ++i < pixels.length; ) {
-            image[i] = Color.red(pixels[i]) / 255.;
-            image[i + greenShift] = Color.green(pixels[i]) / 255.;
-            image[i + blueShift] = Color.blue(pixels[i]) / 255.;
+            image[i] = (Color.red(pixels[i]) / 255. - mean[0]) / std[0];
+            image[i + greenShift] = (Color.green(pixels[i]) / 255. - mean[1]) / std[1];
+            image[i + blueShift] = (Color.blue(pixels[i]) / 255. - mean[2]) / std[2];
         }
         return new Tensor(image, 3, width, height);
     }
