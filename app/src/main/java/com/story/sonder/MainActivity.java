@@ -81,17 +81,20 @@ public class MainActivity extends Activity {
                 != PackageManager.PERMISSION_GRANTED)
             ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission
                     .READ_EXTERNAL_STORAGE}, REQUEST_STORAGE_PERMISSION);
-        else
+        else {
             displayMainScreen();
+            getModelConfigFile();
+        }
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode) {
             case REQUEST_STORAGE_PERMISSION:
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     displayMainScreen();
-                else
+                    getModelConfigFile();
+                } else
                     Toast.makeText(this, "STORAGE PERMISSION DENIED. App will" + " not function.", Toast
                             .LENGTH_SHORT).show();
                 break;
@@ -127,11 +130,16 @@ public class MainActivity extends Activity {
         new LoadImagesFromDB().execute();
     }
 
+    private void getModelConfigFile() {
+        new GetInitialConfig(getApplicationContext()).fetchInitialModel();
+    }
+
     private void showFilterSelectionDialog() {
         final Dialog dialog = Util.createDialog(this, R.layout.filter_popup);
         ConstraintLayout filterLayout = findViewById(R.id.constraintLayout);
         final TextView filterView = findViewById(R.id.filterView);
         final GridView gridView = dialog.findViewById(R.id.filters);
+
         gridView.setAdapter(new FilterAdapter(getApplicationContext(), Constants.categories));
         gridView.setOnItemClickListener((adapterView, view, pos, id) -> {
             filterLayout.setVisibility(View.VISIBLE);
@@ -147,6 +155,7 @@ public class MainActivity extends Activity {
             });
             dialog.dismiss();
         });
+
         dialog.show();
         Objects.requireNonNull(dialog.getWindow())
                 .setLayout((6 * Constants.width) / 7, (3 * Constants.height) / 5);
@@ -167,6 +176,9 @@ public class MainActivity extends Activity {
 
     private void syncModelWithServer() {
         // TODO: if last sync was before 5 minutes, sync
+        SyncModel syncModel = new SyncModel(getApplicationContext());
+        syncModel.sendParameters();
+        syncModel.fetchParameters();
     }
 
     private class LoadImagesFromDB extends AsyncTask<Void, Void, List<ImageDetails>> {
@@ -207,8 +219,7 @@ public class MainActivity extends Activity {
                         Constants.imageDatabase.imageDao().insertOneRecord(imageDetails);
                         recyclerViewImages.add(imageDetails);
                         runOnUiThread(() -> galleryAdapter.notifyItemInserted(recyclerViewImages.size() - 1));
-                    }
-                    else
+                    } else
                         Constants.imageDatabase.imageDao()
                                 .update(new ImageDetails(image_path, image_id, databaseResult.getImageTag()));
                 }

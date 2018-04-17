@@ -84,7 +84,6 @@ public class ImageViewActivity extends Activity {
     }
 
     public void openShareView(View view) {
-        // TODO: Error on Android N and above- file:// URIs not allowed, fix it.
         Intent share = new Intent(Intent.ACTION_SEND);
         share.setType("image/*");
         ImageDetails imageDetails = images.get(imagePager.getCurrentItem());

@@ -156,11 +156,15 @@ public final class ModelUtils {
         return loss.backward(1, loss.forward(input, target).second);
     }
 
-    public static Pair<JSONObject, List<double[]>> parseModel(JSONObject jsonModel) throws
+    public static Pair<JSONObject, JSONArray> parseModel(JSONObject jsonModel) throws
             JSONException {
         JSONObject jsonObject = jsonModel.getJSONObject("optimizer").getJSONObject("parameters");
         JSONArray parameters = jsonObject.getJSONArray("params");
         jsonObject.remove("params");
+        return Pair.create(jsonModel, parameters);
+    }
+
+    public static List<double[]> jsonParametersToArray(JSONArray parameters) throws JSONException {
         List<double[]> parameterList = new ArrayList<>();
         for (int i = -1; ++i < parameters.length(); ) {
             JSONArray jsonArray = parameters.getJSONArray(i);
@@ -170,6 +174,14 @@ public final class ModelUtils {
             }
             parameterList.add(array);
         }
-        return Pair.create(jsonModel, parameterList);
+        return parameterList;
+    }
+
+    public static JSONArray parametersToJSONArray(List<double[]> parameters) throws JSONException {
+        JSONArray jsonArray = new JSONArray();
+        for (double[] p : parameters) {
+            jsonArray.put(new JSONArray(p));
+        }
+        return jsonArray;
     }
 }
