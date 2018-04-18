@@ -27,7 +27,7 @@ class SyncModel {
                     try {
                         Pair<JSONObject, JSONArray> parsedModel = ModelUtils.parseModel(response);
                         Constants.model.second.second.mergeParameters(ModelUtils.jsonParametersToArray(parsedModel.second), Constants.alpha);
-                        // TODO: Write parameters to file in OnDestroy()
+                        Constants.saveToFile = true;
                         Toast.makeText(context, "Parameters synced with server", Toast.LENGTH_SHORT).show();
                     } catch (JSONException e) {
                         e.printStackTrace();

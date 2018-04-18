@@ -7,6 +7,7 @@ import android.arch.persistence.room.Room;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -14,6 +15,7 @@ import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.util.Pair;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
@@ -23,16 +25,24 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.GridView;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.story.sonder.model.ModelUtils;
+
+import org.json.JSONException;
+
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Random;
 
 public class MainActivity extends Activity {
     final private int REQUEST_STORAGE_PERMISSION = 1;
-    private int selectedTag = 0;
+    Random random = new Random();
 
     private List<ImageDetails> recyclerViewImages = new ArrayList<>();
     private GalleryAdapter galleryAdapter;
@@ -164,10 +174,29 @@ public class MainActivity extends Activity {
     private void showTagSelectionDialog() {
         final Dialog dialog = Util.createDialog(this, R.layout.tag_popup);
         GridView gridView = dialog.findViewById(R.id.tags_grid);
-        gridView.setAdapter(new FilterAdapter(getApplicationContext(), Constants.categories));
+        ImageView imageView = dialog.findViewById(R.id.tag_image);
+
+        android.view.ViewGroup.LayoutParams layoutParams = imageView.getLayoutParams();
+        layoutParams.height = (4 * Constants.height) / 10;
+        imageView.setLayoutParams(layoutParams);
+
+        List<ImageDetails> images = new ArrayList<>();
+        Pair<Pair<String[], Object>, ImageDetails> taggedImageData = Pair.create(
+                Pair.create(new String[Constants.topK], new Object()), new ImageDetails());
+
+        AsyncTask.execute(() -> {
+            List<ImageDetails> filteredImages = Constants.imageDatabase.imageDao().filterImages("None");
+            images.addAll(filteredImages);
+            runOnUiThread(() -> tagImage(images, taggedImageData.second, imageView, gridView, dialog));
+        });
+
         gridView.setOnItemClickListener((adapterView, view, pos, id) -> {
-            // TODO: Write tag to database, display the next image with categories
-            selectedTag = pos;
+            taggedImageData.second.setImageTag(gridView.getItemAtPosition(pos).toString());
+
+            AsyncTask.execute(() -> {
+                Constants.imageDatabase.imageDao().update(taggedImageData.second);
+                runOnUiThread(() -> tagImage(images, taggedImageData.second, imageView, gridView, dialog));
+            });
         });
         dialog.show();
         Objects.requireNonNull(dialog.getWindow())
@@ -179,6 +208,29 @@ public class MainActivity extends Activity {
         SyncModel syncModel = new SyncModel(getApplicationContext());
         syncModel.sendParameters();
         syncModel.fetchParameters();
+    }
+
+    private void tagImage(List<ImageDetails> images, ImageDetails taggedImage, ImageView imageView,
+                          GridView gridView, Dialog dialog) {
+        if (images.size() > 0) {
+            Pair<Pair<String[], Object>, ImageDetails> image = updateTagDialog(images, imageView, gridView);
+            taggedImage.setImageId(image.second.getImageId());
+            taggedImage.setImagePath(image.second.getImagePath());
+        } else {
+            dialog.cancel();
+            Toast.makeText(getApplicationContext(), "All images are tagged.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private Pair<Pair<String[], Object>, ImageDetails> updateTagDialog(List<ImageDetails> images, ImageView imageView, GridView gridView) {
+        int position = random.nextInt(images.size());
+
+        ImageDetails image = images.get(position);
+        imageView.setImageBitmap(BitmapFactory.decodeFile(image.getImagePath()));
+        Pair<String[], Object> forwardPhaseOutput = Util.getTagCategories(image.getImagePath());
+        gridView.setAdapter(new FilterAdapter(getApplicationContext(), forwardPhaseOutput.first));
+
+        return Pair.create(forwardPhaseOutput, images.remove(position));
     }
 
     private class LoadImagesFromDB extends AsyncTask<Void, Void, List<ImageDetails>> {
@@ -226,6 +278,21 @@ public class MainActivity extends Activity {
                 images.close();
             }
             return null;
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        if (Constants.saveToFile) {
+            File paramsFile = new File(getApplicationContext().getFilesDir(), Constants.paramsFile);
+            List<double[]> parameters = Constants.model.second.second.getParameters();
+            try {
+                Util.writeToFile(paramsFile, ModelUtils.parametersToJSONArray(parameters));
+            } catch (JSONException | IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

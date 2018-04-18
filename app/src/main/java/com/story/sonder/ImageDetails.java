@@ -14,6 +14,9 @@ public class ImageDetails {
 
     private String imageTag;
 
+    ImageDetails() {
+    }
+
     ImageDetails(@NonNull String imagePath, long imageId, String imageTag) {
         this.imagePath = imagePath;
         this.imageTag = imageTag;
@@ -24,7 +27,7 @@ public class ImageDetails {
         return imageId;
     }
 
-    public void setImageId(long imageId) {
+    void setImageId(long imageId) {
         this.imageId = imageId;
     }
 

@@ -24,4 +24,5 @@ class Constants {
     static int inputWidth = 32;
     static int inputHeight = 32;
     static int topK = 5;
+    static boolean saveToFile = false;
 }
