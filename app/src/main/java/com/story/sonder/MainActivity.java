@@ -204,10 +204,16 @@ public class MainActivity extends Activity {
     }
 
     private void syncModelWithServer() {
-        // TODO: if last sync was before 5 minutes, sync
-        SyncModel syncModel = new SyncModel(getApplicationContext());
-        syncModel.sendParameters();
-        syncModel.fetchParameters();
+        long now = System.currentTimeMillis();
+        if (!Constants.syncSuccessful || now - Constants.lastSyncTime > 5 * 60 * 1000) {
+            Constants.lastSyncTime = now;
+            SyncModel syncModel = new SyncModel(getApplicationContext());
+            syncModel.sendParameters();
+            syncModel.fetchParameters();
+        } else {
+            Toast.makeText(getApplicationContext(), "Cannot sync model. Been less than 5 minutes since last sync.",
+                    Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void tagImage(List<ImageDetails> images, ImageDetails taggedImage, ImageView imageView,

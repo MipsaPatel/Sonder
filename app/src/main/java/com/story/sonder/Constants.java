@@ -25,4 +25,6 @@ class Constants {
     static int inputHeight = 32;
     static int topK = 5;
     static boolean saveToFile = false;
+    static long lastSyncTime = 0;
+    static boolean syncSuccessful = false;
 }

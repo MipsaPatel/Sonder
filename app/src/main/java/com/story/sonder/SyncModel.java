@@ -28,12 +28,15 @@ class SyncModel {
                         Pair<JSONObject, JSONArray> parsedModel = ModelUtils.parseModel(response);
                         Constants.model.second.second.mergeParameters(ModelUtils.jsonParametersToArray(parsedModel.second), Constants.alpha);
                         Constants.saveToFile = true;
-                        Toast.makeText(context, "Parameters synced with server", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, "Parameters fetched from server", Toast.LENGTH_SHORT).show();
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
                 },
-                error -> Toast.makeText(context, "Failed to fetch parameters", Toast.LENGTH_SHORT).show()
+                error -> {
+                    Toast.makeText(context, "Failed to fetch parameters", Toast.LENGTH_SHORT).show();
+                    Constants.syncSuccessful = false;
+                }
         );
         SingletonRequest.getInstance(context.getApplicationContext()).addToRequestQueue(objectRequest);
     }
@@ -47,8 +50,14 @@ class SyncModel {
                     Request.Method.POST,
                     Constants.serverUrl,
                     parameters,
-                    response -> Toast.makeText(context, "Parameters sent to server", Toast.LENGTH_SHORT).show(),
-                    error -> Toast.makeText(context, "Failed to send parameters", Toast.LENGTH_SHORT).show()
+                    response -> {
+                        Toast.makeText(context, "Parameters sent to server", Toast.LENGTH_SHORT).show();
+                        Constants.syncSuccessful = true;
+                    },
+                    error -> {
+                        Toast.makeText(context, "Failed to send parameters", Toast.LENGTH_SHORT).show();
+                        Constants.syncSuccessful = false;
+                    }
             );
             SingletonRequest.getInstance(context.getApplicationContext()).addToRequestQueue(objectRequest);
         } catch (JSONException e) {
