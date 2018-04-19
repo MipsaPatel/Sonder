@@ -58,6 +58,17 @@ public class MainActivity extends Activity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        ConstraintLayout filterLayout = findViewById(R.id.constraintLayout);
+        if (filterLayout.getVisibility() == View.VISIBLE) {
+            TextView filterView = findViewById(R.id.filterView);
+            String filter = filterView.getText().toString();
+            setFilteredImagesAdapter(filter);
+        }
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.options_menu, menu);
@@ -155,20 +166,23 @@ public class MainActivity extends Activity {
             filterLayout.setVisibility(View.VISIBLE);
             filterView.setText(gridView.getItemAtPosition(pos).toString());
 
-            AsyncTask.execute(() -> {
-                List<ImageDetails> filteredImages = Constants.imageDatabase.imageDao().filterImages(Constants
-                        .categories[pos]);
-                runOnUiThread(() -> galleryView.setAdapter(
-                        new GalleryAdapter(getApplicationContext(), filteredImages,
-                                Constants.categories[pos], getContentResolver())
-                ));
-            });
+            setFilteredImagesAdapter(Constants.categories[pos]);
             dialog.dismiss();
         });
 
         dialog.show();
         Objects.requireNonNull(dialog.getWindow())
                 .setLayout((6 * Constants.width) / 7, (3 * Constants.height) / 5);
+    }
+
+    private void setFilteredImagesAdapter(String filter) {
+        AsyncTask.execute(() -> {
+            List<ImageDetails> filteredImages = Constants.imageDatabase.imageDao().filterImages(filter);
+            runOnUiThread(() -> galleryView.setAdapter(
+                    new GalleryAdapter(getApplicationContext(), filteredImages,
+                            filter, getContentResolver())
+            ));
+        });
     }
 
     private void showTagSelectionDialog() {
@@ -211,7 +225,7 @@ public class MainActivity extends Activity {
             syncModel.sendParameters();
             syncModel.fetchParameters();
         } else {
-            Toast.makeText(getApplicationContext(), "Cannot sync model. Been less than 5 minutes since last sync.",
+            Toast.makeText(getApplicationContext(), "Cannot sync model. Been less than 5 minutes since last successful sync.",
                     Toast.LENGTH_SHORT).show();
         }
     }
@@ -284,6 +298,17 @@ public class MainActivity extends Activity {
                 images.close();
             }
             return null;
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        ConstraintLayout filterLayout = findViewById(R.id.constraintLayout);
+        if (filterLayout.getVisibility() == View.VISIBLE) {
+            ImageButton closeButton = findViewById(R.id.close_filter_button);
+            closeButton.callOnClick();
+        } else {
+            super.onBackPressed();
         }
     }
 
