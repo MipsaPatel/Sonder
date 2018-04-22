@@ -9,18 +9,14 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 
-import java.util.ArrayList;
 import java.util.List;
 
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
 public class ImagePagerAdapter extends PagerAdapter {
-
-    private List<ImageDetails> images = new ArrayList<>();
-    private Context context;
-
-    ImagePagerAdapter(List<ImageDetails> images, Context context) {
-        this.images.addAll(images);
-        this.context = context;
-    }
+    private final Context context;
+    private final List<ImageDetails> images;
 
     @Override
     public int getCount() {
@@ -29,7 +25,8 @@ public class ImagePagerAdapter extends PagerAdapter {
 
     @Override
     public Object instantiateItem(ViewGroup container, int position) {
-        LayoutInflater inflater = (LayoutInflater) this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        LayoutInflater inflater = (LayoutInflater) this.context
+                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View imagePagerItem = inflater.inflate(R.layout.image_pager_item, container, false);
         ImageView item = imagePagerItem.findViewById(R.id.image);
         Glide.with(context).load(images.get(position).getImagePath()).into(item);

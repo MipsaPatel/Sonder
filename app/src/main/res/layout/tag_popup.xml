@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/popup_background"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -12,27 +13,29 @@
         android:layout_margin="@dimen/popup_margin"
         android:contentDescription="@string/tag_image_description"
         android:adjustViewBounds="true"
+        app:layout_constraintBottom_toTopOf="@+id/select_text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/select_text"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/popup_margin"
+        android:gravity="bottom|center_horizontal"
         android:text="@string/popup_text"
         android:textSize="@dimen/popup_text_size"
+        app:layout_constraintBottom_toTopOf="@+id/tags_grid"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tag_image" />
 
     <GridView
         android:id="@+id/tags_grid"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_margin="@dimen/popup_margin"
-        android:layout_marginBottom="8dp"
         android:horizontalSpacing="@dimen/labels_horizontal_spacing"
         android:numColumns="3"
         android:verticalSpacing="@dimen/labels_vertical_spacing"

@@ -152,10 +152,6 @@ public final class ModelUtils {
         throw new IllegalArgumentException("invalid name " + name);
     }
 
-    public static <T> Tensor throughLoss(ILoss<T> loss, Tensor input, T target) {
-        return loss.backward(1, loss.forward(input, target).second);
-    }
-
     public static Pair<JSONObject, JSONArray> parseModel(JSONObject jsonModel) throws
             JSONException {
         JSONObject jsonObject = jsonModel.getJSONObject("optimizer").getJSONObject("parameters");

@@ -4,9 +4,10 @@ import android.support.v4.util.Pair;
 
 import com.story.sonder.model.Tensor;
 
-public class BCELoss implements ILoss<Integer> {
+public class BCELoss implements ILoss {
     @Override
-    public Pair<Double, Object> forward(Tensor input, Integer target) {
+    public Pair<Double, Object> forward(Tensor input, Object targetObject) {
+        int target = (int) targetObject;
         double in = input.getValueAt(0);
         return Pair.create(-target * Math.log(in) - (1 - target) * Math.log(1 - in),
                 Pair.create(in, target));

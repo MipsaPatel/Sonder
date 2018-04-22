@@ -7,22 +7,22 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.util.Pair;
 import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.widget.GridView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 public class ImageViewActivity extends Activity {
-
-    private List<ImageDetails> images = new ArrayList<>();
+    private static final String tagNeedsModel = "Cannot tag pictures without model";
+    private Category filter;
     private ViewPager imagePager;
     private TextView tagView;
-    private String filter;
+    private List<ImageDetails> images;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -31,29 +31,20 @@ public class ImageViewActivity extends Activity {
 
         Intent intent = getIntent();
         int imagePosition = Objects.requireNonNull(intent.getExtras()).getInt("image_position");
-        filter = intent.getExtras().getString("set_filter");
+        filter = CategoryConverter.toCategory(intent.getExtras().getInt("set_filter"));
 
         imagePager = findViewById(R.id.image_pager);
         tagView = findViewById(R.id.image_tag_text);
+        images = new ArrayList<>(AppResources.adapter.get(filter).getImages());
 
-        AsyncTask.execute(() -> {
-            if (filter != null)
-                images.addAll(Constants.imageDatabase.imageDao().filterImages(filter));
-            else
-                images.addAll(Constants.imageDatabase.imageDao().getAll());
-            runOnUiThread(() -> {
-                imagePager.setAdapter(new ImagePagerAdapter(images, this));
-                imagePager.setCurrentItem(imagePosition);
-            });
-        });
-
-        if (imagePosition == 0)
-            setTag(0);
+        imagePager.setAdapter(new ImagePagerAdapter(this, images));
+        imagePager.setCurrentItem(imagePosition);
+        setTag(imagePosition);
 
         imagePager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
 
             @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+            public void onPageScrolled(int pos, float positionOffset, int positionOffsetPixels) {
             }
 
             @Override
@@ -68,42 +59,39 @@ public class ImageViewActivity extends Activity {
     }
 
     public void openTagView(View view) {
-        final Dialog dialog = Util.createDialog(this, R.layout.filter_popup);
-        final TextView tagView = findViewById(R.id.image_tag_text);
-        final GridView gridView = dialog.findViewById(R.id.filters);
-        int currentPage = imagePager.getCurrentItem();
-        Pair<String[], Object> forwardPhaseOutput = Util.getTagCategories(images.get(currentPage).getImagePath());
-
-        gridView.setAdapter(new FilterAdapter(getApplicationContext(), forwardPhaseOutput.first));
-
-        gridView.setOnItemClickListener((adapterView, v, pos, id) -> {
-            String tag = forwardPhaseOutput.first[pos];
-            images.get(currentPage).setImageTag(tag);
-            tagView.setText(tag);
-            AsyncTask.execute(() -> Constants.imageDatabase.imageDao().update(images.get(currentPage)));
-            dialog.dismiss();
+        if (AppResources.model == null) {
+            Toast.makeText(this, tagNeedsModel, Toast.LENGTH_SHORT).show();
+            return;
+        }
+        Dialog dialog = Util.createDialog(this, R.layout.filter_popup);
+        GridView gridView = dialog.findViewById(R.id.filters);
+        dialog.setOnDismissListener(dialogInterface -> {
+            AppResources.imageInProcess = null;
+            AsyncTask.execute(AppResources.model::update);
         });
 
-        dialog.show();
-        Objects.requireNonNull(dialog.getWindow())
-                .setLayout((6 * Constants.width) / 7, (Constants.height) / 3);
+        ImageDetails imageDetails = images.get(imagePager.getCurrentItem());
+        AsyncTask.execute(() -> Util.tagImage(this, dialog, gridView, imageDetails));
+
+        gridView.setOnItemClickListener((parent, v, position, id) -> {
+            AppResources.imageInProcess.updateAdapter(position);
+            AppResources.imageInProcess.train();
+            setTag(imagePager.getCurrentItem());
+            dialog.hide();
+        });
     }
 
     public void openShareView(View view) {
+        // TODO: Use content-provider
         Intent share = new Intent(Intent.ACTION_SEND);
         share.setType("image/*");
         ImageDetails imageDetails = images.get(imagePager.getCurrentItem());
         share.putExtra(Intent.EXTRA_STREAM, Uri.parse(imageDetails.getImagePath()));
-        share.putExtra(Intent.EXTRA_TEXT, imageDetails.getImageTag());
+        share.putExtra(Intent.EXTRA_TEXT, imageDetails.getImageTag().toString());
         startActivity(Intent.createChooser(share, "Share with"));
     }
 
-    void setTag(int position) {
-        AsyncTask.execute(() -> {
-            String tag = Constants.imageDatabase.imageDao()
-                    .getRecordFromImagePath(images.get(position).getImagePath())
-                    .getImageTag();
-            runOnUiThread(() -> tagView.setText(tag));
-        });
+    private void setTag(int position) {
+        tagView.setText(images.get(position).getImageTag().toString());
     }
 }

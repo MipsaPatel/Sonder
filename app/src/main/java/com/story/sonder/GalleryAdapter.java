@@ -1,53 +1,48 @@
 package com.story.sonder;
 
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.media.ThumbnailUtils;
-import android.provider.MediaStore;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.MyViewHolder> {
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-    private List<ImageDetails> images;
-    private Context context;
-    private ContentResolver contentResolver;
-    private String filter;
+@RequiredArgsConstructor
+class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.MyViewHolder> {
+    private final Context context;
 
-    GalleryAdapter(Context context, List<ImageDetails> images, String filter, ContentResolver contentResolver) {
-        this.context = context;
-        this.images = images;
-        this.contentResolver = contentResolver;
-        this.filter = filter;
-    }
+    @Getter
+    private final List<ImageDetails> images = new ArrayList<>();
+
+    private final Category filter;
 
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View item = LayoutInflater.from(parent.getContext()).inflate(R.layout.gallery_item, parent, false);
+        View item = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.gallery_item, parent, false);
         return new MyViewHolder(item);
     }
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
-        long imageId = images.get(position).getImageId();
-        Bitmap thumbnail = MediaStore.Images.Thumbnails
-                .getThumbnail(contentResolver, imageId, MediaStore.Images.Thumbnails.MICRO_KIND, null);
-
-        if (thumbnail != null)
-            holder.image.setImageBitmap(thumbnail);
-        else {
-            String imagePath = images.get(position).getImagePath();
-            Bitmap thumbnailBitmap = ThumbnailUtils.extractThumbnail(BitmapFactory.decodeFile(imagePath), 96, 96);
-            holder.image.setImageBitmap(thumbnailBitmap);
-        }
+        Glide.with(context)
+                .load(images.get(position).getImagePath())
+                .centerCrop()
+                .placeholder(R.drawable.ic_icon_placeholder)
+                .crossFade()
+                .diskCacheStrategy(DiskCacheStrategy.RESULT)
+                .into(holder.image);
     }
 
     @Override
@@ -55,8 +50,31 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.MyViewHo
         return images.size();
     }
 
+    public ImageDetails get(int position) {
+        return images.get(position);
+    }
+
+    public int addImage(ImageDetails imageDetails) {
+        int index = Collections.binarySearch(images, imageDetails);
+        if (index >= 0) {
+            return -1;
+        }
+        index = -index - 1;
+        images.add(index, imageDetails);
+        return index;
+    }
+
+    public int removeImage(ImageDetails imageDetails) {
+        int index = Collections.binarySearch(images, imageDetails);
+        if (index < 0) {
+            return -1;
+        }
+        images.remove(index);
+        return index;
+    }
+
     public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        ImageView image;
+        final ImageView image;
 
         MyViewHolder(View item) {
             super(item);
@@ -68,7 +86,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.MyViewHo
         public void onClick(View view) {
             Intent intent = new Intent(context, ImageViewActivity.class);
             intent.putExtra("image_position", getLayoutPosition());
-            intent.putExtra("set_filter", filter);
+            intent.putExtra("set_filter", CategoryConverter.toInt(filter));
             context.startActivity(intent);
         }
     }

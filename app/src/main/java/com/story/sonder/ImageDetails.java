@@ -2,49 +2,33 @@ package com.story.sonder;
 
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
+import android.arch.persistence.room.TypeConverters;
 import android.support.annotation.NonNull;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
-public class ImageDetails {
+class ImageDetails implements Comparable<ImageDetails> {
     @PrimaryKey
     @NonNull
     private String imagePath;
 
-    private long imageId;
+    private long dateTaken;
 
-    private String imageTag;
+    @TypeConverters(CategoryConverter.class)
+    private Category imageTag;
 
-    ImageDetails() {
-    }
-
-    ImageDetails(@NonNull String imagePath, long imageId, String imageTag) {
-        this.imagePath = imagePath;
-        this.imageTag = imageTag;
-        this.imageId = imageId;
-    }
-
-    long getImageId() {
-        return imageId;
-    }
-
-    void setImageId(long imageId) {
-        this.imageId = imageId;
-    }
-
-    @NonNull
-    String getImagePath() {
-        return imagePath;
-    }
-
-    void setImagePath(String imagePath) {
-        this.imagePath = imagePath;
-    }
-
-    String getImageTag() {
-        return imageTag;
-    }
-
-    void setImageTag(String imageTag) {
-        this.imageTag = imageTag;
+    @Override
+    public int compareTo(@NonNull ImageDetails o) {
+        if (dateTaken == o.dateTaken)
+            return imagePath.compareTo(o.imagePath);
+        return dateTaken < o.dateTaken ? 1 : -1;
     }
 }

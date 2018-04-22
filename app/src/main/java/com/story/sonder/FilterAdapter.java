@@ -7,15 +7,12 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 
-public class FilterAdapter extends BaseAdapter {
+import lombok.RequiredArgsConstructor;
 
-    private Context context;
-    private String[] tags;
-
-    FilterAdapter(Context context, String[] tags) {
-        this.context = context;
-        this.tags = tags;
-    }
+@RequiredArgsConstructor
+class FilterAdapter extends BaseAdapter {
+    private final Context context;
+    private final Category[] tags;
 
     @Override
     public int getCount() {
@@ -23,26 +20,36 @@ public class FilterAdapter extends BaseAdapter {
     }
 
     @Override
-    public Object getItem(int i) {
-        return tags[i];
+    public Object getItem(int position) {
+        return tags[position];
     }
 
     @Override
-    public long getItemId(int i) {
+    public long getItemId(int position) {
         return 0;
     }
 
     @Override
-    public View getView(int pos, View view, ViewGroup viewGroup) {
-        if (view != null)
-            return view;
-        LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View gridView = null;
-        if (layoutInflater != null) {
-            gridView = layoutInflater.inflate(R.layout.grid_item, null);
-            Button tag = gridView.findViewById(R.id.grid_button);
-            tag.setText(tags[pos]);
+    public View getView(int position, View convertView, ViewGroup parent) {
+        ViewHolder holder;
+        if (convertView == null) {
+            holder = new ViewHolder();
+            LayoutInflater layoutInflater = (LayoutInflater) context
+                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            if (layoutInflater != null) {
+                convertView = layoutInflater.inflate(R.layout.grid_item, parent, false);
+                holder.tag = convertView.findViewById(R.id.grid_button);
+                convertView.setTag(holder);
+            }
         }
-        return gridView;
+        else {
+            holder = (ViewHolder) convertView.getTag();
+        }
+        holder.tag.setText(getItem(position).toString());
+        return convertView;
+    }
+
+    static class ViewHolder {
+        Button tag;
     }
 }

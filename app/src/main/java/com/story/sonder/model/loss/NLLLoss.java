@@ -4,9 +4,10 @@ import android.support.v4.util.Pair;
 
 import com.story.sonder.model.Tensor;
 
-public class NLLLoss implements ILoss<Integer> {
+public class NLLLoss implements ILoss {
     @Override
-    public Pair<Double, Object> forward(Tensor input, Integer target) {
+    public Pair<Double, Object> forward(Tensor input, Object targetObject) {
+        int target = (int) targetObject;
         return Pair.create(-input.getValueAt(target), Pair.create(input.getShape(), target));
     }
 

@@ -10,14 +10,12 @@ import java.util.List;
 
 @Dao
 public interface ImageDao {
-    @Query("SELECT * FROM ImageDetails")
-    List<ImageDetails> getAll();
+    @Query("SELECT * FROM ImageDetails ORDER BY dateTaken DESC, imagePath ASC LIMIT :pageSize " +
+            "OFFSET :offset")
+    List<ImageDetails> getNextPage(int pageSize, int offset);
 
-    @Query("SELECT * FROM ImageDetails WHERE imagePath LIKE :image_path")
-    ImageDetails getRecordFromImagePath(String image_path);
-
-    @Query("SELECT * FROM ImageDetails WHERE imageTag LIKE :image_tag")
-    List<ImageDetails> filterImages(String image_tag);
+    @Query("SELECT * FROM ImageDetails WHERE imagePath = :imagePath")
+    ImageDetails getRecordFrom(String imagePath);
 
     @Insert
     void insertOneRecord(ImageDetails imageDetails);

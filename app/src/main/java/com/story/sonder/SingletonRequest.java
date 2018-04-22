@@ -16,18 +16,18 @@ class SingletonRequest {
         requestQueue = getRequestQueue();
     }
 
-    private RequestQueue getRequestQueue() {
-        if (requestQueue == null) {
-            requestQueue = Volley.newRequestQueue(context.getApplicationContext());
-        }
-        return requestQueue;
-    }
-
     static synchronized SingletonRequest getInstance(Context context) {
         if (singletonRequest == null) {
             singletonRequest = new SingletonRequest(context);
         }
         return singletonRequest;
+    }
+
+    private RequestQueue getRequestQueue() {
+        if (requestQueue == null) {
+            requestQueue = Volley.newRequestQueue(context.getApplicationContext());
+        }
+        return requestQueue;
     }
 
     <T> void addToRequestQueue(Request<T> req) {

@@ -12,56 +12,66 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-class SyncModel {
-    private Context context;
+import lombok.AllArgsConstructor;
 
-    SyncModel(Context context) {
-        this.context = context;
-    }
+@AllArgsConstructor
+class SyncModel {
+    private static final String fetchSuccess = "Parameters fetched from server";
+    private static final String fetchFail = "Failed to fetch parameters";
+
+    private static final String sendSuccess = "Parameters sent to server";
+    private static final String sendFail = "Failed to send parameters";
+
+    private final Context context;
 
     void fetchParameters() {
-        JsonObjectRequest objectRequest = new JsonObjectRequest(
+        JsonObjectRequest request = new JsonObjectRequest(
                 Request.Method.GET,
-                Constants.serverUrl, null,
+                Constants.serverUrl,
+                null,
                 response -> {
                     try {
-                        Pair<JSONObject, JSONArray> parsedModel = ModelUtils.parseModel(response);
-                        Constants.model.second.second.mergeParameters(ModelUtils.jsonParametersToArray(parsedModel.second), Constants.alpha);
+                        Pair<JSONObject, JSONArray> model = ModelUtils.parseModel(response);
+                        AppResources.model.mergeParameters(
+                                ModelUtils.jsonParametersToArray(model.second)
+                        );
                         Constants.saveToFile = true;
-                        Toast.makeText(context, "Parameters fetched from server", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, fetchSuccess, Toast.LENGTH_SHORT).show();
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
                 },
                 error -> {
-                    Toast.makeText(context, "Failed to fetch parameters", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, fetchFail, Toast.LENGTH_SHORT).show();
                     Constants.syncSuccessful = false;
                 }
         );
-        SingletonRequest.getInstance(context.getApplicationContext()).addToRequestQueue(objectRequest);
+        SingletonRequest.getInstance(context.getApplicationContext()).addToRequestQueue(request);
     }
 
     void sendParameters() {
         JSONObject parameters = new JSONObject();
 
         try {
-            parameters.put("params", ModelUtils.parametersToJSONArray(Constants.model.second.second.getParameters()));
-            JsonObjectRequest objectRequest = new JsonObjectRequest(
-                    Request.Method.POST,
-                    Constants.serverUrl,
-                    parameters,
-                    response -> {
-                        Toast.makeText(context, "Parameters sent to server", Toast.LENGTH_SHORT).show();
-                        Constants.syncSuccessful = true;
-                    },
-                    error -> {
-                        Toast.makeText(context, "Failed to send parameters", Toast.LENGTH_SHORT).show();
-                        Constants.syncSuccessful = false;
-                    }
-            );
-            SingletonRequest.getInstance(context.getApplicationContext()).addToRequestQueue(objectRequest);
+            JSONArray params = ModelUtils.parametersToJSONArray(AppResources.model.getParameters());
+            parameters.put("params", params);
         } catch (JSONException e) {
             e.printStackTrace();
+            return;
         }
+        JsonObjectRequest request = new JsonObjectRequest(
+                Request.Method.POST,
+                Constants.serverUrl,
+                parameters,
+                response -> {
+                    Toast.makeText(context, sendSuccess, Toast.LENGTH_SHORT).show();
+                    Constants.syncSuccessful = true;
+                },
+                error -> {
+                    Toast.makeText(context, sendFail, Toast.LENGTH_SHORT).show();
+                    Constants.syncSuccessful = false;
+                }
+        );
+        SingletonRequest.getInstance(context.getApplicationContext()).addToRequestQueue(request);
     }
 }

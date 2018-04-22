@@ -1,6 +1,7 @@
 package com.story.sonder;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.support.v4.util.Pair;
 import android.widget.Toast;
 
@@ -15,12 +16,11 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.IOException;
 
+import lombok.AllArgsConstructor;
+
+@AllArgsConstructor
 class GetInitialConfig {
     private Context context;
-
-    GetInitialConfig(Context context) {
-        this.context = context;
-    }
 
     void fetchInitialModel() {
         File configFile = new File(context.getFilesDir(), Constants.configFile);
@@ -30,26 +30,32 @@ class GetInitialConfig {
             boolean created = configFile.createNewFile();
 
             if (paramsFile.createNewFile() || created) {
-                JsonObjectRequest objectRequest = new JsonObjectRequest(
+                JsonObjectRequest request = new JsonObjectRequest(
                         Request.Method.GET,
                         Constants.serverUrl,
                         null,
                         response -> {
                             try {
-                                Pair<JSONObject, JSONArray> parsedModel = ModelUtils.parseModel(response);
-                                Util.writeToFile(configFile, parsedModel.first);
-                                Util.writeToFile(paramsFile, parsedModel.second);
+                                Pair<JSONObject, JSONArray> model = ModelUtils.parseModel(response);
+                                Util.writeToFile(configFile, model.first);
+                                Util.writeToFile(paramsFile, model.second);
 
                             } catch (IOException | JSONException e) {
                                 e.printStackTrace();
                             }
                             initializeModel();
                         },
-                        error -> Toast.makeText(context, "Failed to fetch parameters", Toast.LENGTH_SHORT).show()
+                        error -> Toast.makeText(
+                                context,
+                                "Failed to fetch parameters",
+                                Toast.LENGTH_SHORT
+                        ).show()
                 );
-                SingletonRequest.getInstance(context.getApplicationContext()).addToRequestQueue(objectRequest);
-            } else {
-                initializeModel();
+                SingletonRequest.getInstance(context.getApplicationContext())
+                        .addToRequestQueue(request);
+            }
+            else {
+                AsyncTask.execute(this::initializeModel);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -60,8 +66,10 @@ class GetInitialConfig {
         try {
             JSONObject config = new JSONObject(Util.readFromFile(context, Constants.configFile));
             JSONArray parameters = new JSONArray(Util.readFromFile(context, Constants.paramsFile));
-            Constants.model = Util.createModelFromJSON(config);
-            Constants.model.second.second.setParameters(ModelUtils.jsonParametersToArray(parameters));
+            AppResources.model = Util.createModelFromJSON(config);
+            AppResources.model.getOptimizer().setParameters(
+                    ModelUtils.jsonParametersToArray(parameters)
+            );
         } catch (IOException | JSONException e) {
             e.printStackTrace();
         }

@@ -36,6 +36,7 @@
             android:background="@android:color/transparent"
             android:contentDescription="@string/close_filter"
             android:src="@drawable/ic_close"
+            android:onClick="resetFilter"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
