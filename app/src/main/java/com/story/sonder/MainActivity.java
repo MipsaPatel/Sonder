@@ -255,7 +255,7 @@ public class MainActivity extends Activity {
 
         dialog.setOnDismissListener(dialogInterface -> {
             AppResources.imageInProcess = null;
-            handler.postDelayed(AppResources.model::update, 1000);
+            handler.postDelayed(() -> AsyncTask.execute(AppResources.model::update), 1000);
         });
 
         AsyncTask.execute(() -> tagAnImage(dialog, imageView, gridView));
