@@ -39,6 +39,7 @@ class ReadImagesFromMediaStore extends AsyncTask<Void, Void, List<Integer>> {
 
             while (images.moveToNext()) {
                 String imagePath = images.getString(pathIndex);
+                validImages.add(imagePath);
                 long date = images.getLong(dateIndex);
                 ImageDetails databaseResult = AppResources.imDB.imageDao().getRecordFrom(imagePath);
 
@@ -46,10 +47,6 @@ class ReadImagesFromMediaStore extends AsyncTask<Void, Void, List<Integer>> {
                     ImageDetails imageDetails = new ImageDetails(imagePath, date, Category.None);
                     AppResources.imDB.imageDao().insertOneRecord(imageDetails);
                     addImage.callback(imageDetails);
-                    validImages.add(imageDetails.getImagePath());
-                }
-                else {
-                    validImages.add(databaseResult.getImagePath());
                 }
             }
             images.close();

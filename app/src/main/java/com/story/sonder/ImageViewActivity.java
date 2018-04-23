@@ -77,7 +77,7 @@ public class ImageViewActivity extends Activity {
             AppResources.imageInProcess.updateAdapter(position);
             AppResources.imageInProcess.train();
             setTag(imagePager.getCurrentItem());
-            dialog.hide();
+            dialog.dismiss();
         });
     }
 
