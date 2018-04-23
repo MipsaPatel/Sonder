@@ -118,6 +118,7 @@ public class MainActivity extends Activity {
                             "STORAGE PERMISSION DENIED. App will not function.",
                             Toast.LENGTH_SHORT
                     ).show();
+                    finishAndRemoveTask();
                 }
                 break;
 
