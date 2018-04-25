@@ -5,11 +5,11 @@ public enum Category {
     Beach,
     Bird,
     Fabric,
+    Flowers,
     Food,
     Furniture,
     Mountains,
-    Instrument,
-    Nature,
+    Music,
     Vehicle,
     None,
     All
