@@ -28,7 +28,7 @@ class Constants {
     static final int inputWidth = 32;
     static final int inputHeight = 32;
 
-    static final double alpha = 0.3;
+    static final double alpha = 0.7;
 
     static final int topK = 5;
 

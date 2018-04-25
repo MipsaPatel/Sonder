@@ -41,8 +41,8 @@ abstract class Optimizer implements IOptimizer {
     @Override
     public void mergeParameters(List<double[]> parameters, double alpha) {
         for (int p = -1; ++p < parameters.size(); ) {
-            double[] parameter = parameters.get(p);
-            this.parameters.get(p).get(0).updateEach((i, v) -> v * (alpha) + parameter[i] * (1 - alpha));
+            double[] param = parameters.get(p);
+            this.parameters.get(p).get(0).updateEach((i, v) -> v * alpha + param[i] * (1 - alpha));
         }
     }
 
