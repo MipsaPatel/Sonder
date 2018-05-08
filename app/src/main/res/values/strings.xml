@@ -14,4 +14,8 @@
     <string name="title_activity_about_us">AboutUsActivity</string>
     <string name="about_us_description">This is an app to tag photos in your gallery.</string>
     <string name="options_sync">Sync model</string>
+    <string name="introduction">We are a bunch of developers who want to solve problems using technology.</string>
+    <string name="about_app">In this increasingly digital world, are you worried about your privacy? Are you in a constant frenzy about losing your personal data to companies and other apps?
+        We provide you an image tagging application that can categorize images without transferring any photos out of your phone.</string>
+    <string name="developers"> Mipsa Patel \n Sneha Manohar \n Tilak S. Naik \n Vibha A. Karanth</string>
 </resources>
